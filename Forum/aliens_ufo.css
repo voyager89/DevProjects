@@ -1,0 +1,85 @@
+* {font-family:verdana;}
+a {color:#00f; text-decoration:none;}
+a:hover,a:active {color:#f00; text-decoration:underline;}
+
+a.nv {background-color:rgb(255,75,75); color:#000; font-size:14px; margin-bottom:10px; padding:8px 16px; text-decoration:none;}
+
+form {margin:auto; padding:10px; width:50%;}
+form *{font-family:arial; font-size:18px;}
+h1 {text-decoration:underline;}
+input {width:99.5%;}
+input[type="submit"] {width:20%;}
+label em {font-size:16px;}
+
+div.post_title {margin:auto; margin-bottom:10px; padding:2px; width:75%;}
+div.post_title div.title {background-color:rgb(255,75,75); color:#000; margin-bottom:5px; width:auto;}
+div.user img {border:1px #000 solid; width:50px;}
+div.post_title div.msg,div.post_title div.user {border-width:0px; margin-bottom:8px; padding:0px 2px 0px 2px; text-align:left; width:auto;}
+div.quote {padding:10px;}
+div.post_title div.msg {padding:10px 5px 0px 10px;}
+div.post_title div.actions {border:1px #000 solid; display:inline-block; margin-top:5px;}
+div.post_title div.user {display:inline-block;}
+div.user div.uName {display:inline-block; margin-top:7px; vertical-align:top;}
+div.post_title div.actions {border-width:0px; float:right; width:75px;}
+div.actions a {background-color:rgb(255,75,75); border:1px rgb(255,75,75) solid; color:#000; padding:5px 10px 5px 10px;
+	text-decoration:none; transition:background-color,border,color,0.5s;}
+div.actions a:hover {background-color:rgb(255,105,105); border-color:rgb(255,105,105); color:#000;}
+
+h2 {margin:auto; text-align:center; text-decoration:none;}
+h2 a {color:#00f; text-decoration:none; transition:color,0.5s;}
+h2 a:hover {color:#f00;}
+hr {margin:0px;}
+hr.doc_title {margin-bottom:30px;}
+
+input[type="submit"] {background-color:#fff; border:2px #000 solid; cursor:pointer; transition:background-color,border,color,0.25s;}
+input[type="submit"]:hover {background-color:rgb(2,105,189); border-color:rgb(2,105,189); color:#fff;}
+
+nav {height:65px;}
+nav ul:nth-child(1) {float:left; margin:5px 0px 10px 20px;}
+nav ul:nth-child(2) {float:right; margin:5px 10px 10px 0px;}
+nav ul li {list-style-type:none;}
+nav ul:nth-child(2) li {float:right; margin-right:10px;}
+nav ul li a {color:#000; display:inline-block; font-family:verdana; padding:10px 20px 10px 20px; text-decoration:none; transition:background,color,0.25s;}
+nav ul li a:hover {background-color:rgb(2,105,189); color:#fff; text-decoration:none!important;}
+
+table {background-color:rgb(220,220,220); margin:20px auto;}
+td {border:1px #000 solid; padding:10px; text-align:center;}
+tr:nth-child(1) td {background-color:rgb(255,75,75);}
+td:nth-child(1) {width:45%;}
+td:nth-child(2),td:nth-child(3) {width:10%;}
+td:nth-child(4) {width:15%;}
+
+textarea {width:99%;}
+@media (max-width:799px)
+{
+	* {margin:0px;}
+	div[class="post_title"] {box-shadow:0px 10px 15px #C0C0C0;}
+	div.post_title {background-color:#fff; border-width:0px; margin:auto; margin-left:0px!important; margin-bottom:10px; padding:2px; width:98.5%!important;}
+	div.post_title div.title {background-color:rgb(255,75,75); color:#000; margin-bottom:5px; width:98.86%!important;}
+	div.user img {display:none;}
+	div.post_title div.msg,div.post_title div.user {border-width:0px; margin-bottom:8px; padding:0px 2px 0px 2px; text-align:left; width:auto;}
+	div.quote {padding:10px;}
+	div.post_title div.msg {padding:10px 2px 0px 2px;}
+	div.post_title div.actions {border:1px #000 solid; display:inline-block; margin-top:5px;}
+	div.post_title div.user {display:inline-block;}
+	div.user div.uName {display:inline-block; margin-top:7px; vertical-align:top;}
+	div.post_title div.actions {border-width:0px; float:right; text-align:center; width:90%;}
+	div.actions a {background-color:rgb(255,75,75); border:1px rgb(255,75,75) solid; color:#000;
+	display:inline-block; padding:5px 10px 5px 10px; text-decoration:none; transition:background-color,0.5s; width:80%;}
+	div.actions a:active {background-color:rgb(255,75,75); color:#000;}
+
+	h1,h3 {text-align:center; text-decoration:none;}
+
+	form {width:86%!important;}
+	form input[type="submit"] {width:100%;}
+	input[type="submit"]:active {background-color:rgb(2,105,189); border-color:rgb(2,105,189); color:#fff;}
+
+	nav ul {padding:0px;}
+	nav ul li a {padding:10px;}
+	nav ul li a:active {background-color:rgb(2,105,189); border-color:rgb(2,105,189); color:#fff;}
+	nav ul li:nth-child(3) a {display:none;}
+
+	table {border-spacing:0px!important;}
+	tr td {display:none;}
+	tr td:nth-child(1) {display:block; width:auto;}
+}

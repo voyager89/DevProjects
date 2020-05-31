@@ -1,0 +1,7 @@
+DirectoryIndex Restricted.html
+
+Options +FollowSymLinks
+RewriteEngine On
+RewriteRule ^(.*).html controller.php?requested_document=$1 [QSA,L]
+
+# For production mode enforce the SSL rule!
