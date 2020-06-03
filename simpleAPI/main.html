@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <script type="text/javascript">
+			function ByID(obj)
+			{
+				return document.getElementById(obj);
+			}
+            function callAPI(request)
+            {
+				const authKey = ByID("key").value;
+				const format = document.querySelector("input[name='format']:checked").value;
+				const XMLhttp = new XMLHttpRequest();
+				const response = ByID("api_res");
+
+				response.innerText = "Awaiting response...";
+
+                XMLhttp.onreadystatechange = function(event)
+                {
+                    if (this.readyState == 4 && this.status == 200)
+                    {
+                        response.innerHTML = this.responseText;
+                    }
+                }
+                XMLhttp.open("GET", `${request}&key=${btoa(authKey)}&format=${format}`, true);
+                XMLhttp.send("");
+            }
+			
+			function getSelectedTimezone()
+			{
+				const selectedTimezone = ByID("timezone");
+				
+				window.callAPI('timezone/'+ selectedTimezone.options[selectedTimezone.selectedIndex].value +'/getTimeAndDate');
+			}
+			
+			function getTimezoneFormat(timezone)
+			{
+				regions = timezone.split("__");
+				return regions.join("/");
+			}
+
+            window.onload = function()
+            {
+                const today = new Date();
+				ByID("thisYear").innerText = "2000 - " + today.getFullYear() + " by Voyager 89";
+				
+				const timezones = ByID("timezone");
+				
+				for (let i = 0; i < timezones.children.length; ++i)
+				{
+					const option = timezones.children[i];
+
+					option.innerText = getTimezoneFormat(option.value);
+				}
+            }
+        </script>
+        <style type="text/css">
+            body {font-family:verdana;}
+
+            div.interface {background-color:rgb(35,179,248); margin:20px auto; text-align:center; width:500px;}
+            div.intctr {margin:auto; padding-top:10px; padding-bottom:20px; text-align:center; width:70%;}
+            div.intctr h2 {text-align:center;}
+            
+			div.intctr span.task {background-color:rgb(255,173,105); cursor:pointer; display:inline-block; margin:7px auto;
+                padding:5px; text-align:center; text-transform:uppercase; transition:background-color,0.5s; width:275px;}
+            div.intctr span.task:hover {background-color:rgb(255,200,132);}
+			
+            div#api_res {height:150px; margin:auto; word-wrap:break-word;}
+            div#thisYear {text-align:center;}
+            div.sepr {font-size:50px; text-align:center;}
+            
+			input[type="text"] {border-width:0px; display:inline-block; font-size:16px; margin:auto; padding:10px; width:265px;}
+            input[type="button"] {background-color:rgb(255,153,85); border-width:0px; margin:30px auto; padding:10px; width:105%;}
+
+			h1 {text-align:center;}
+			hr {border-color:#000; margin:20px auto;}
+			
+			select {font-size:16px; padding:5px; width:286px;}
+			
+            @media (max-width:425px)
+            {
+                div.interface {width:95%;}
+				span.task {width:100%;}
+            }
+        </style>
+        <title>Voyager 89 - API</title>
+    </head>
+    <body>
+        <h1>Simple API</h1>
+        <hr/>
+        <div class="interface">
+            <div class="intctr">
+                <h2>LOG ON</h2>
+
+                <input id="key" name="key" placeholder="Authentication key" type="text" value="simpleAPI123"/>
+            </div>
+        </div>
+        <div class="sepr">&darr;</div>
+        <div class="interface">
+            <div class="intctr" style="text-align:center;">
+                <h2>SELECT TASK</h2><hr/>
+				FORMAT:
+				<input id="format_json" name="format" checked="checked" type="radio" value="json"/> <label for="format_json">JSON</label>
+				<input id="format_xml" name="format" type="radio" value="xml"/> <label for="format_xml">XML</label>
+				<hr/>
+				
+                <span class="task" onclick="window.callAPI('timezone/currentTimeZone/getTimeAndDate');">Get current timezone date/time</span>
+				<hr/>
+				
+				<select id="timezone" name="timezone">
+					<option value="Africa__Maseru"></option>
+					<option value="Africa__Mbabane"></option>
+					<option value="Africa__Mogadishu"></option>
+					<option value="Africa__Monrovia"></option>
+					<option value="Africa__Nairobi"></option>
+					<option value="Africa__Ndjamena"></option>
+					<option value="Africa__Niamey"></option>
+					<option value="Africa__Nouakchott"></option>
+					<option value="Africa__Ouagadougou"></option>
+					<option value="Africa__Porto-Novo"></option>
+					<option value="Africa__Sao_Tome"></option>
+					<option value="Africa__Timbuktu"></option>
+					<option value="Africa__Tripoli"></option>
+					<option value="Africa__Tunis"></option>
+					<option value="Africa__Windhoek"></option>
+					<option value="America__Adak"></option>
+					<option value="America__Anchorage"></option>
+					<option value="America__Anguilla"></option>
+					<option value="America__Antigua"></option>
+					<option value="America__Araguaina"></option>
+					<option value="America__Argentina__Buenos_Aires"></option>
+					<option value="America__Argentina__Catamarca"></option>
+					<option value="America__Argentina__ComodRivadavia"></option>
+					<option value="America__Argentina__Cordoba"></option>
+					<option value="America__Argentina__Jujuy"></option>
+					<option value="America__Argentina__La_Rioja"></option>
+					<option value="America__Argentina__Mendoza"></option>
+					<option value="America__Argentina__Rio_Gallegos"></option>
+					<option value="America__Argentina__Salta"></option>
+					<option value="America__Argentina__San_Juan"></option>
+					<option value="America__Argentina__San_Luis"></option>
+					<option value="America__Argentina__Tucuman"></option>
+					<option value="America__Argentina__Ushuaia"></option>
+					<option value="America__Aruba"></option>
+					<option value="America__Asuncion"></option>
+					<option value="America__Atikokan"></option>
+					<option value="America__Atka"></option>
+					<option value="America__Bahia"></option>
+					<option value="America__Bahia_Banderas"></option>
+					<option value="America__Barbados"></option>
+					<option value="America__Belem"></option>
+					<option value="America__Belize"></option>
+					<option value="America__Blanc-Sablon"></option>
+					<option value="America__Boa_Vista"></option>
+					<option value="America__Bogota"></option>
+					<option value="America__Boise"></option>
+					<option value="America__Buenos_Aires"></option>
+					<option value="America__Cambridge_Bay"></option>
+					<option value="America__Campo_Grande"></option>
+					<option value="America__Cancun"></option>
+					<option value="America__Caracas"></option>
+					<option value="America__Catamarca"></option>
+					<option value="America__Cayenne"></option>
+					<option value="America__Cayman"></option>
+					<option value="America__Chicago"></option>
+					<option value="America__Chihuahua"></option>
+					<option value="America__Coral_Harbour"></option>
+					<option value="America__Cordoba"></option>
+					<option value="America__Costa_Rica"></option>
+					<option value="America__Creston"></option>
+					<option value="America__Cuiaba"></option>
+					<option value="America__Curacao"></option>
+					<option value="America__Danmarkshavn"></option>
+					<option value="America__Dawson"></option>
+					<option value="America__Dawson_Creek"></option>
+					<option value="America__Denver"></option>
+					<option value="America__Detroit"></option>
+					<option value="America__Dominica"></option>
+					<option value="America__Edmonton"></option>
+					<option value="America__Eirunepe"></option>
+					<option value="America__El_Salvador"></option>
+					<option value="America__Ensenada"></option>
+					<option value="America__Fort_Nelson"></option>
+					<option value="America__Fort_Wayne"></option>
+					<option value="America__Fortaleza"></option>
+					<option value="America__Glace_Bay"></option>
+					<option value="America__Godthab"></option>
+					<option value="America__Goose_Bay"></option>
+					<option value="America__Grand_Turk"></option>
+					<option value="America__Grenada"></option>
+					<option value="America__Guadeloupe"></option>
+					<option value="America__Guatemala"></option>
+					<option value="America__Guayaquil"></option>
+					<option value="America__Guyana"></option>
+					<option value="America__Halifax"></option>
+					<option value="America__Havana"></option>
+					<option value="America__Hermosillo"></option>
+					<option value="America__Indiana__Indianapolis"></option>
+					<option value="America__Indiana__Knox"></option>
+					<option value="America__Indiana__Marengo"></option>
+					<option value="America__Indiana__Petersburg"></option>
+					<option value="America__Indiana__Tell_City"></option>
+					<option value="America__Indiana__Vevay"></option>
+					<option value="America__Indiana__Vincennes"></option>
+					<option value="America__Indiana__Winamac"></option>
+					<option value="America__Indianapolis"></option>
+					<option value="America__Inuvik"></option>
+					<option value="America__Iqaluit"></option>
+					<option value="America__Jamaica"></option>
+					<option value="America__Jujuy"></option>
+					<option value="America__Juneau"></option>
+					<option value="America__Kentucky__Louisville"></option>
+					<option value="America__Kentucky__Monticello"></option>
+					<option value="America__Knox_IN"></option>
+					<option value="America__Kralendijk"></option>
+					<option value="America__La_Paz"></option>
+					<option value="America__Lima"></option>
+					<option value="America__Los_Angeles"></option>
+					<option value="America__Louisville"></option>
+					<option value="America__Lower_Princes"></option>
+					<option value="America__Maceio"></option>
+					<option value="America__Managua"></option>
+					<option value="America__Manaus"></option>
+					<option value="America__Marigot"></option>
+					<option value="America__Martinique"></option>
+					<option value="America__Matamoros"></option>
+					<option value="America__Mazatlan"></option>
+					<option value="America__Mendoza"></option>
+					<option value="America__Menominee"></option>
+					<option value="America__Merida"></option>
+					<option value="America__Metlakatla"></option>
+					<option value="America__Mexico_City"></option>
+					<option value="America__Miquelon"></option>
+					<option value="America__Moncton"></option>
+					<option value="America__Monterrey"></option>
+					<option value="America__Montevideo"></option>
+					<option value="America__Montreal"></option>
+					<option value="America__Montserrat"></option>
+					<option value="America__Nassau"></option>
+					<option value="America__New_York"></option>
+					<option value="America__Nipigon"></option>
+					<option value="America__Nome"></option>
+					<option value="America__Noronha"></option>
+					<option value="America__North_Dakota__Beulah"></option>
+					<option value="America__North_Dakota__Center"></option>
+					<option value="America__North_Dakota__New_Salem"></option>
+					<option value="America__Ojinaga"></option>
+					<option value="America__Panama"></option>
+					<option value="America__Pangnirtung"></option>
+					<option value="America__Paramaribo"></option>
+					<option value="America__Phoenix"></option>
+					<option value="America__Port-au-Prince"></option>
+					<option value="America__Port_of_Spain"></option>
+					<option value="America__Porto_Acre"></option>
+					<option value="America__Porto_Velho"></option>
+					<option value="America__Puerto_Rico"></option>
+					<option value="America__Punta_Arenas"></option>
+					<option value="America__Rainy_River"></option>
+					<option value="America__Rankin_Inlet"></option>
+					<option value="America__Recife"></option>
+					<option value="America__Regina"></option>
+					<option value="America__Resolute"></option>
+					<option value="America__Rio_Branco"></option>
+					<option value="America__Rosario"></option>
+					<option value="America__Santa_Isabel"></option>
+					<option value="America__Santarem"></option>
+					<option value="America__Santiago"></option>
+					<option value="America__Santo_Domingo"></option>
+					<option value="America__Sao_Paulo"></option>
+					<option value="America__Scoresbysund"></option>
+					<option value="America__Shiprock"></option>
+					<option value="America__Sitka"></option>
+					<option value="America__St_Barthelemy"></option>
+					<option value="America__St_Johns"></option>
+					<option value="America__St_Kitts"></option>
+					<option value="America__St_Lucia"></option>
+					<option value="America__St_Thomas"></option>
+					<option value="America__St_Vincent"></option>
+					<option value="America__Swift_Current"></option>
+					<option value="America__Tegucigalpa"></option>
+					<option value="America__Thule"></option>
+					<option value="America__Thunder_Bay"></option>
+					<option value="America__Tijuana"></option>
+					<option value="America__Toronto"></option>
+					<option value="America__Tortola"></option>
+					<option value="America__Vancouver"></option>
+					<option value="America__Virgin"></option>
+					<option value="America__Whitehorse"></option>
+					<option value="America__Winnipeg"></option>
+					<option value="America__Yakutat"></option>
+					<option value="America__Yellowknife"></option>
+					<option value="Antarctica__Casey"></option>
+					<option value="Antarctica__Davis"></option>
+					<option value="Antarctica__DumontDUrville"></option>
+					<option value="Antarctica__Macquarie"></option>
+					<option value="Antarctica__Mawson"></option>
+					<option value="Antarctica__McMurdo"></option>
+					<option value="Antarctica__Palmer"></option>
+					<option value="Antarctica__Rothera"></option>
+					<option value="Antarctica__South_Pole"></option>
+					<option value="Antarctica__Syowa"></option>
+					<option value="Antarctica__Troll"></option>
+					<option value="Antarctica__Vostok"></option>
+					<option value="Arctic__Longyearbyen"></option>
+					<option value="Asia__Aden"></option>
+					<option value="Asia__Almaty"></option>
+					<option value="Asia__Amman"></option>
+					<option value="Asia__Anadyr"></option>
+					<option value="Asia__Aqtau"></option>
+					<option value="Asia__Aqtobe"></option>
+					<option value="Asia__Ashgabat"></option>
+					<option value="Asia__Ashkhabad"></option>
+					<option value="Asia__Atyrau"></option>
+					<option value="Asia__Baghdad"></option>
+					<option value="Asia__Bahrain"></option>
+					<option value="Asia__Baku"></option>
+					<option value="Asia__Bangkok"></option>
+					<option value="Asia__Barnaul"></option>
+					<option value="Asia__Beirut"></option>
+					<option value="Asia__Bishkek"></option>
+					<option value="Asia__Brunei"></option>
+					<option value="Asia__Calcutta"></option>
+					<option value="Asia__Chita"></option>
+					<option value="Asia__Choibalsan"></option>
+					<option value="Asia__Chongqing"></option>
+					<option value="Asia__Chungking"></option>
+					<option value="Asia__Colombo"></option>
+					<option value="Asia__Dacca"></option>
+					<option value="Asia__Damascus"></option>
+					<option value="Asia__Dhaka"></option>
+					<option value="Asia__Dili"></option>
+					<option value="Asia__Dubai"></option>
+					<option value="Asia__Dushanbe"></option>
+					<option value="Asia__Famagusta"></option>
+					<option value="Asia__Gaza"></option>
+					<option value="Asia__Harbin"></option>
+					<option value="Asia__Hebron"></option>
+					<option value="Asia__Ho_Chi_Minh"></option>
+					<option value="Asia__Hong_Kong"></option>
+					<option value="Asia__Hovd"></option>
+					<option value="Asia__Irkutsk"></option>
+					<option value="Asia__Istanbul"></option>
+					<option value="Asia__Jakarta"></option>
+					<option value="Asia__Jayapura"></option>
+					<option value="Asia__Jerusalem"></option>
+					<option value="Asia__Kabul"></option>
+					<option value="Asia__Kamchatka"></option>
+					<option value="Asia__Karachi"></option>
+					<option value="Asia__Kashgar"></option>
+					<option value="Asia__Kathmandu"></option>
+					<option value="Asia__Katmandu"></option>
+					<option value="Asia__Khandyga"></option>
+					<option value="Asia__Kolkata"></option>
+					<option value="Asia__Krasnoyarsk"></option>
+					<option value="Asia__Kuala_Lumpur"></option>
+					<option value="Asia__Kuching"></option>
+					<option value="Asia__Kuwait"></option>
+					<option value="Asia__Macao"></option>
+					<option value="Asia__Macau"></option>
+					<option value="Asia__Magadan"></option>
+					<option value="Asia__Makassar"></option>
+					<option value="Asia__Manila"></option>
+					<option value="Asia__Muscat"></option>
+					<option value="Asia__Nicosia"></option>
+					<option value="Asia__Novokuznetsk"></option>
+					<option value="Asia__Novosibirsk"></option>
+					<option value="Asia__Omsk"></option>
+					<option value="Asia__Oral"></option>
+					<option value="Asia__Phnom_Penh"></option>
+					<option value="Asia__Pontianak"></option>
+					<option value="Asia__Pyongyang"></option>
+					<option value="Asia__Qatar"></option>
+					<option value="Asia__Qostanay"></option>
+					<option value="Asia__Qyzylorda"></option>
+					<option value="Asia__Rangoon"></option>
+					<option value="Asia__Riyadh"></option>
+					<option value="Asia__Saigon"></option>
+					<option value="Asia__Sakhalin"></option>
+					<option value="Asia__Samarkand"></option>
+					<option value="Asia__Seoul"></option>
+					<option value="Asia__Shanghai"></option>
+					<option value="Asia__Singapore"></option>
+					<option value="Asia__Srednekolymsk"></option>
+					<option value="Asia__Taipei"></option>
+					<option value="Asia__Tashkent"></option>
+					<option value="Asia__Tbilisi"></option>
+					<option value="Asia__Tehran"></option>
+					<option value="Asia__Tel_Aviv"></option>
+					<option value="Asia__Thimbu"></option>
+					<option value="Asia__Thimphu"></option>
+					<option value="Asia__Tokyo"></option>
+					<option value="Asia__Tomsk"></option>
+					<option value="Asia__Ujung_Pandang"></option>
+					<option value="Asia__Ulaanbaatar"></option>
+					<option value="Asia__Ulan_Bator"></option>
+					<option value="Asia__Urumqi"></option>
+					<option value="Asia__Ust-Nera"></option>
+					<option value="Asia__Vientiane"></option>
+					<option value="Asia__Vladivostok"></option>
+					<option value="Asia__Yakutsk"></option>
+					<option value="Asia__Yangon"></option>
+					<option value="Asia__Yekaterinburg"></option>
+					<option value="Asia__Yerevan"></option>
+					<option value="Atlantic__Azores"></option>
+					<option value="Atlantic__Bermuda"></option>
+					<option value="Atlantic__Canary"></option>
+					<option value="Atlantic__Cape_Verde"></option>
+					<option value="Atlantic__Faeroe"></option>
+					<option value="Atlantic__Faroe"></option>
+					<option value="Atlantic__Jan_Mayen"></option>
+					<option value="Atlantic__Madeira"></option>
+					<option value="Atlantic__Reykjavik"></option>
+					<option value="Atlantic__South_Georgia"></option>
+					<option value="Atlantic__St_Helena"></option>
+					<option value="Atlantic__Stanley"></option>
+					<option value="Australia__ACT"></option>
+					<option value="Australia__Adelaide"></option>
+					<option value="Australia__Brisbane"></option>
+					<option value="Australia__Broken_Hill"></option>
+					<option value="Australia__Canberra"></option>
+					<option value="Australia__Currie"></option>
+					<option value="Australia__Darwin"></option>
+					<option value="Australia__Eucla"></option>
+					<option value="Australia__Hobart"></option>
+					<option value="Australia__LHI"></option>
+					<option value="Australia__Lindeman"></option>
+					<option value="Australia__Lord_Howe"></option>
+					<option value="Australia__Melbourne"></option>
+					<option value="Australia__North"></option>
+					<option value="Australia__NSW"></option>
+					<option value="Australia__Perth"></option>
+					<option value="Australia__Queensland"></option>
+					<option value="Australia__South"></option>
+					<option selected value="Australia__Sydney"></option>
+					<option value="Australia__Tasmania"></option>
+					<option value="Australia__Victoria"></option>
+					<option value="Australia__West"></option>
+					<option value="Australia__Yancowinna"></option>
+					<option value="Brazil__Acre"></option>
+					<option value="Brazil__DeNoronha"></option>
+					<option value="Brazil__East"></option>
+					<option value="Brazil__West"></option>
+					<option value="Canada__Atlantic"></option>
+					<option value="Canada__Central"></option>
+					<option value="Canada__Eastern"></option>
+					<option value="Canada__Mountain"></option>
+					<option value="Canada__Newfoundland"></option>
+					<option value="Canada__Pacific"></option>
+					<option value="Canada__Saskatchewan"></option>
+					<option value="Canada__Yukon"></option>
+					<option value="Chile__Continental"></option>
+					<option value="Chile__EasterIsland"></option>
+					<option value="Etc__GMT"></option>
+					<option value="Etc__GMT+0"></option>
+					<option value="Etc__GMT+1"></option>
+					<option value="Etc__GMT+10"></option>
+					<option value="Etc__GMT+11"></option>
+					<option value="Etc__GMT+12"></option>
+					<option value="Etc__GMT+2"></option>
+					<option value="Etc__GMT+3"></option>
+					<option value="Etc__GMT+4"></option>
+					<option value="Etc__GMT+5"></option>
+					<option value="Etc__GMT+6"></option>
+					<option value="Etc__GMT+7"></option>
+					<option value="Etc__GMT+8"></option>
+					<option value="Etc__GMT+9"></option>
+					<option value="Etc__GMT-0"></option>
+					<option value="Etc__GMT-1"></option>
+					<option value="Etc__GMT-10"></option>
+					<option value="Etc__GMT-11"></option>
+					<option value="Etc__GMT-12"></option>
+					<option value="Etc__GMT-13"></option>
+					<option value="Etc__GMT-14"></option>
+					<option value="Etc__GMT-2"></option>
+					<option value="Etc__GMT-3"></option>
+					<option value="Etc__GMT-4"></option>
+					<option value="Etc__GMT-5"></option>
+					<option value="Etc__GMT-6"></option>
+					<option value="Etc__GMT-7"></option>
+					<option value="Etc__GMT-8"></option>
+					<option value="Etc__GMT-9"></option>
+					<option value="Etc__GMT0"></option>
+					<option value="Etc__Greenwich"></option>
+					<option value="Etc__UCT"></option>
+					<option value="Etc__Universal"></option>
+					<option value="Etc__UTC"></option>
+					<option value="Etc__Zulu"></option>
+					<option value="Europe__Amsterdam"></option>
+					<option value="Europe__Andorra"></option>
+					<option value="Europe__Astrakhan"></option>
+					<option value="Europe__Athens"></option>
+					<option value="Europe__Belfast"></option>
+					<option value="Europe__Belgrade"></option>
+					<option value="Europe__Berlin"></option>
+					<option value="Europe__Bratislava"></option>
+					<option value="Europe__Brussels"></option>
+					<option value="Europe__Bucharest"></option>
+					<option value="Europe__Budapest"></option>
+					<option value="Europe__Busingen"></option>
+					<option value="Europe__Chisinau"></option>
+					<option value="Europe__Copenhagen"></option>
+					<option value="Europe__Dublin"></option>
+					<option value="Europe__Gibraltar"></option>
+					<option value="Europe__Guernsey"></option>
+					<option value="Europe__Helsinki"></option>
+					<option value="Europe__Isle_of_Man"></option>
+					<option value="Europe__Istanbul"></option>
+					<option value="Europe__Jersey"></option>
+					<option value="Europe__Kaliningrad"></option>
+					<option value="Europe__Kiev"></option>
+					<option value="Europe__Kirov"></option>
+					<option value="Europe__Lisbon"></option>
+					<option value="Europe__Ljubljana"></option>
+					<option value="Europe__London"></option>
+					<option value="Europe__Luxembourg"></option>
+					<option value="Europe__Madrid"></option>
+					<option value="Europe__Malta"></option>
+					<option value="Europe__Mariehamn"></option>
+					<option value="Europe__Minsk"></option>
+					<option value="Europe__Monaco"></option>
+					<option value="Europe__Moscow"></option>
+					<option value="Europe__Nicosia"></option>
+					<option value="Europe__Oslo"></option>
+					<option value="Europe__Paris"></option>
+					<option value="Europe__Podgorica"></option>
+					<option value="Europe__Prague"></option>
+					<option value="Europe__Riga"></option>
+					<option value="Europe__Rome"></option>
+					<option value="Europe__Samara"></option>
+					<option value="Europe__San_Marino"></option>
+					<option value="Europe__Sarajevo"></option>
+					<option value="Europe__Saratov"></option>
+					<option value="Europe__Simferopol"></option>
+					<option value="Europe__Skopje"></option>
+					<option value="Europe__Sofia"></option>
+					<option value="Europe__Stockholm"></option>
+					<option value="Europe__Tallinn"></option>
+					<option value="Europe__Tirane"></option>
+					<option value="Europe__Tiraspol"></option>
+					<option value="Europe__Ulyanovsk"></option>
+					<option value="Europe__Uzhgorod"></option>
+					<option value="Europe__Vaduz"></option>
+					<option value="Europe__Vatican"></option>
+					<option value="Europe__Vienna"></option>
+					<option value="Europe__Vilnius"></option>
+					<option value="Europe__Volgograd"></option>
+					<option value="Europe__Warsaw"></option>
+					<option value="Europe__Zagreb"></option>
+					<option value="Europe__Zaporozhye"></option>
+					<option value="Europe__Zurich"></option>
+					<option value="Indian__Antananarivo"></option>
+					<option value="Indian__Chagos"></option>
+					<option value="Indian__Christmas"></option>
+					<option value="Indian__Cocos"></option>
+					<option value="Indian__Comoro"></option>
+					<option value="Indian__Kerguelen"></option>
+					<option value="Indian__Mahe"></option>
+					<option value="Indian__Maldives"></option>
+					<option value="Indian__Mauritius"></option>
+					<option value="Indian__Mayotte"></option>
+					<option value="Indian__Reunion"></option>
+					<option value="Mexico__BajaNorte"></option>
+					<option value="Mexico__BajaSur"></option>
+					<option value="Mexico__General"></option>
+					<option value="Pacific__Apia"></option>
+					<option value="Pacific__Auckland"></option>
+					<option value="Pacific__Bougainville"></option>
+					<option value="Pacific__Chatham"></option>
+					<option value="Pacific__Chuuk"></option>
+					<option value="Pacific__Easter"></option>
+					<option value="Pacific__Efate"></option>
+					<option value="Pacific__Enderbury"></option>
+					<option value="Pacific__Fakaofo"></option>
+					<option value="Pacific__Fiji"></option>
+					<option value="Pacific__Funafuti"></option>
+					<option value="Pacific__Galapagos"></option>
+					<option value="Pacific__Gambier"></option>
+					<option value="Pacific__Guadalcanal"></option>
+					<option value="Pacific__Guam"></option>
+					<option value="Pacific__Honolulu"></option>
+					<option value="Pacific__Johnston"></option>
+					<option value="Pacific__Kiritimati"></option>
+					<option value="Pacific__Kosrae"></option>
+					<option value="Pacific__Kwajalein"></option>
+					<option value="Pacific__Majuro"></option>
+					<option value="Pacific__Marquesas"></option>
+					<option value="Pacific__Midway"></option>
+					<option value="Pacific__Nauru"></option>
+					<option value="Pacific__Niue"></option>
+					<option value="Pacific__Norfolk"></option>
+					<option value="Pacific__Noumea"></option>
+					<option value="Pacific__Pago_Pago"></option>
+					<option value="Pacific__Palau"></option>
+					<option value="Pacific__Pitcairn"></option>
+					<option value="Pacific__Pohnpei"></option>
+					<option value="Pacific__Ponape"></option>
+					<option value="Pacific__Port_Moresby"></option>
+					<option value="Pacific__Rarotonga"></option>
+					<option value="Pacific__Saipan"></option>
+					<option value="Pacific__Samoa"></option>
+					<option value="Pacific__Tahiti"></option>
+					<option value="Pacific__Tarawa"></option>
+					<option value="Pacific__Tongatapu"></option>
+					<option value="Pacific__Truk"></option>
+					<option value="Pacific__Wake"></option>
+					<option value="Pacific__Wallis"></option>
+					<option value="Pacific__Yap"></option>
+					<option value="Poland"></option>
+					<option value="Portugal"></option>
+					<option value="PRC"></option>
+					<option value="PST8PDT"></option>
+					<option value="ROC"></option>
+					<option value="ROK"></option>
+					<option value="Singapore"></option>
+					<option value="Turkey"></option>
+					<option value="UCT"></option>
+					<option value="Universal"></option>
+					<option value="US__Alaska"></option>
+					<option value="US__Aleutian"></option>
+					<option value="US__Arizona"></option>
+					<option value="US__Central"></option>
+					<option value="US__East-Indiana"></option>
+					<option value="US__Eastern"></option>
+					<option value="US__Hawaii"></option>
+					<option value="US__Indiana-Starke"></option>
+					<option value="US__Michigan"></option>
+					<option value="US__Mountain"></option>
+					<option value="US__Pacific"></option>
+					<option value="US__Pacific-New"></option>
+					<option value="US__Samoa"></option>
+					<option value="UTC"></option>
+					<option value="W-SU"></option>
+					<option value="WET"></option>
+					<option value="Zulu"></option>
+				</select>
+				<br/>
+				<span class="task" onclick="window.getSelectedTimezone();">Get selected timezone date/time</span>
+				<hr/>
+				<input id="md5" placeholder="String" type="text" value=""/>
+				<span class="task" onclick="window.callAPI('tools/md5/'+ ByID('md5').value);">Get MD5 of above string</span>
+				<hr/>
+				<input id="b64enc" placeholder="String" type="text" value=""/>
+				<span class="task" onclick="window.callAPI('tools/base64Encode/'+ ByID('b64enc').value);">Encode above string to base64</span>
+				<hr/>
+				<input id="b64dec" placeholder="String" type="text" value=""/>
+				<span class="task" onclick="window.callAPI('tools/base64Decode/'+ ByID('b64dec').value);">Decode above string from base64</span>
+			</div>
+        </div>
+        <div class="sepr">&darr;</div>
+        <div class="interface" style="overflow-y:scroll;">
+            <div class="intctr" style="width:100%;">
+                <h2>RESPONSE</h2>
+                <div id="api_res">
+                    &nbsp;
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div id="thisYear">
+            &nbsp;
+        </div>
+    </body>
+</html>
