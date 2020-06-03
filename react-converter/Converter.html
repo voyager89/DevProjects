@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <script src="react.min.js"></script>
+        <script src="react-dom.js"></script>
+        <script src="babel-browser.min.js"></script>
+        <script type="text/babel">
+            function stripBad(string)
+            {
+                if (string)
+                {
+                    for (var i=0, output='', valid="eE-0123456789."; i<string.length; i++)
+                    {
+                        if (valid.indexOf(string.charAt(i)) != -1)
+                        {
+                            output += string.charAt(i)
+                        }
+                    }
+                    return output;
+                }
+            }
+            function ByID(obj)
+            {
+                var defObj={value:"0"};
+                return obj!=null ?document.getElementById(obj) :defObj;
+            }
+            function get_fact(ff,from_val,to_val)
+            {
+                // first convert to kelvin
+                if (from_val == 0){
+                    ff = ff + 273.15;
+                }
+                else if (from_val == 1){
+                    ff = ((ff - 32)/ 1.8) + 273.15;
+                }
+                else if (from_val == 2){
+                    ff = ff / 1.8;
+                }
+                else if (from_val == 3){
+                    ff = (ff * 1.25) + 273.15;
+                }
+
+                if (ff < 0){
+                    // Below absolute zero
+                    return "Below Absolute Zero";
+                }
+
+                // now convert kelvin to unit
+                if (to_val == 0){
+                    ff = ff - 273.15;
+                }
+                else if (to_val == 1){
+                    ff = (1.8 * (ff -273.15)) + 32;
+                }
+                else if (to_val == 2){
+                    ff = ff * 1.8;
+                }
+                else if (to_val == 3){
+                    ff = (ff - 273.15) / 1.25;
+                }
+ 
+                // round it off
+                if (Number.prototype.toFixed) {
+                    ff = ff.toFixed(7);
+                    ff = parseFloat(ff);
+                }
+                else {
+                    var leftSide = Math.floor(ff);
+                    var rightSide = ff - leftSide;
+                    ff = leftSide + Math.round(rightSide *10000000)/10000000;
+                }
+                return ff;
+            }
+            function doConvert()
+            {
+                if (ByID("from_t") && ByID("to_t"))
+                {
+                    var fromVal,toVal,fromName,toName,v1;
+                    v1 = ByID("i_data").value;
+                    v1 = stripBad(v1);
+                    v1 = parseFloat(v1);
+                    if (isNaN(v1))
+                    {
+                        v1 = 0;
+                    }
+                    ByID("i_data").value = v1;
+  
+                    fromVal = ByID("from_t")[ByID("from_t").selectedIndex].value;
+                    toVal = ByID("to_t")[ByID("to_t").selectedIndex].value;
+                    fromName = ByID("from_t").options[ByID("from_t").selectedIndex].text;
+                    toName = ByID("to_t").options[ByID("to_t").selectedIndex].text;
+
+                    var ConvertedTemp = get_fact(v1, fromVal, toVal);
+                    if (ConvertedTemp == "Below Absolute Zero")
+                    {
+                        ByID("c_res").innerText="Your input cannot be below absolute zero.";
+                    }
+                    else {
+                        ByID("c_res").innerText=v1 +" " +fromName +" = " +ConvertedTemp +" " +toName;
+                    }
+                }
+            }
+            window.onload=function()
+            {
+                var doc=document.querySelector("section.doc");
+                function show_type(val)
+                {
+                    switch (val) // More converters will be made in the future!
+                    {
+                        case "temp":
+                            return "Temperature!";
+                        break;
+                    }
+                }
+                class Converter extends React.Component {
+                    constructor(props){
+                        super(props);
+                        this.state={
+                            temp:"",
+                            tVal:"",
+                            arrShow:"inline-block",
+                            cvrtW:400,
+                            cvrtVW:375,
+                            iWidth:"95%",
+                            selWidth:"37%"
+                        };
+                        this.inputTemp=this.inputTemp.bind(this);
+                        this.tempVal=this.tempVal.bind(this);
+                    }
+                    inputTemp(evt){
+                        this.setState({temp: evt.target.value});
+                    }
+                    tempVal(evt){
+                        this.setState({temp: this.state.temp});
+                    }
+                    componentDidMount()
+                    {
+                        var docBody=document.body.offsetWidth;
+                        if (docBody<991)
+                        {
+                            this.setState({arrShow:"none", cvrtW:"96%", cvrtVW:"96%", iWidth:"88%", selWidth:"41%"});
+                        }
+                        else if (docBody>=991)
+                        {
+                            this.setState({arrShow:"inline-block", cvrtW:400, cvrtVW:375, iWidth:"95%", selWidth:"37%"});
+                        }
+                    }
+                    render(){
+                        var cvrtStyle={
+                            divRes: {height:40, marginTop:15},
+                            inputText: {border:"1px #000 solid", boxSizing:"content-box", display:"block", margin:"auto", padding:"5px 0px", textAlign:"center", width:this.state.iWidth},
+                            selectMnu: {border:"1px #000 solid", boxSizing:"content-box", marginTop:"10px", padding:"10px 10px", overflow:"unset", width:this.state.selWidth},
+                            selectMnuOpt1: {fontWeight:"bold", textAlign:"center", textDecoration:"underline"},
+                            converter: {border:"1px #000 solid", boxShadow:"5px 5px 5px #c0c0c0", margin:"30px auto", textAlign:"center", width:this.state.cvrtW},
+                            cvrt_vessel: {margin:"auto", width:this.state.cvrtVW},
+                            span: {bottom:40, display:this.state.arrShow, fontSize:30, position:"relative"}
+                        };
+                        return (
+                            <div className="temperature" style={cvrtStyle.converter}>
+                                <div className="vessel" onChange={doConvert()} style={cvrtStyle.cvrt_vessel}>
+                                    <h1>{show_type(this.props.type)}</h1>
+                                        <input id="i_data" onChange={this.inputTemp} onfocus="ByID('c_res').innerText='';" placeholder="Type in quantity to convert" style={cvrtStyle.inputText} type="text" value={this.state.temp}/>
+                                        <select id="from_t" onChange={this.tempVal} size="6" style={cvrtStyle.selectMnu}>
+                                            <option disabled style={cvrtStyle.selectMnuOpt1}>From</option>
+                                            <option selected value="0">Celsius</option>
+                                            <option value="1">Fahrenheit</option>
+                                            <option value="2">Kelvin</option>
+                                            <option value="3">Rankine</option>
+                                            <option value="4">Reaumur</option>
+                                        </select>
+                                        <span style={cvrtStyle.span}>&rarr;</span>
+                                        <select id="to_t" onChange={this.tempVal} size="6" style={cvrtStyle.selectMnu}>
+                                            <option disabled style={cvrtStyle.selectMnuOpt1} value>To</option>
+                                            <option selected value="0">Celsius</option>
+                                            <option value="1">Fahrenheit</option>
+                                            <option value="2">Kelvin</option>
+                                            <option value="3">Rankine</option>
+                                            <option value="4">Reaumur</option>
+                                        </select>
+                                    <div id="c_res" style={cvrtStyle.divRes}>&nbsp;</div>
+                                </div>
+                            </div>
+                        );
+                    }
+                }
+                class Footer extends React.Component {
+                    render()
+                    {
+                        var ftStyle={
+                            backgroundColor:"rgba(0,0,0,0.5)",
+                            bottom:0,
+                            color:"#fff",
+                            fontSize:12,
+                            fontWeight: "bold",
+                            padding:"5px 0px",
+                            position: "fixed",
+                            textAlign: "center",
+                            width:"100%"
+                        }
+                        return(
+                            <footer style={ftStyle}>2000 - {(new Date().getFullYear())} by Voyager 89</footer>
+                        );
+                    }
+                }
+
+                ReactDOM.render(
+                    <div>
+                        <Converter type="temp"/>
+                        <Footer/>
+                    </div>
+                ,doc);
+            }
+        </script>
+        <style type="text/css">
+            body {font-family:verdana; margin:0px;}
+        </style>
+        <title>Conversion tool - Voyager 89</title>
+    </head>
+    <body>
+        <section class="doc">
+            Please wait...
+        </section>
+    </body>
+</html>
