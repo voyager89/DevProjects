@@ -1,4 +1,3 @@
-<?php require_once "../../admin-ctrl/control-override.php"; new ControlOverride('Simple API', 'EN'); ?>
 <?php
 	class SimpleAPI
 	{
