@@ -3,10 +3,50 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <script type="text/javascript">
+			const sp_chars = [
+				["\"", "[01]"],
+				["`", "[02]"],
+				["!", "[03]"],
+				["@", "[04]"],
+				["#", "[05]"],
+				["$", "[06]"],
+				["%", "[07]"],
+				["^", "[08]"],
+				["&", "[09]"],
+				["*", "[10]"],
+				["{", "[11]"],
+				["}", "[12]"],
+				["|", "[13]"],
+				["<", "[14]"],
+				[">", "[15]"],
+				["=", "[16]"],
+				["/", "[17]"],
+				[" ", "+"]
+			];
+
+			function disguiseSpecialChars(str)
+			{
+				let output = str;
+
+				for (let i = 0; i < str.length; ++i)
+				{
+					for (let j = 0; j < sp_chars.length; ++j)
+					{
+						if (str.charAt(i) == sp_chars[j][0])
+						{
+							output = output.replace(str.charAt(i), sp_chars[j][1]);
+						}
+					}
+				}
+				
+				return output;
+			}
+
 			function ByID(obj)
 			{
 				return document.getElementById(obj);
 			}
+			
             function callAPI(request)
             {
 				const authKey = ByID("key").value;
@@ -81,7 +121,7 @@
             @media (max-width:425px)
             {
                 div.interface {width:95%;}
-				span.task {width:100%;}
+                div.intctr, span.task {width:100%;}
             }
         </style>
         <title>Voyager 89 - API</title>
@@ -638,13 +678,13 @@
 				<span class="task" onclick="window.getSelectedTimezone();">Get selected timezone date/time</span>
 				<hr/>
 				<input id="md5" placeholder="String" type="text" value=""/>
-				<span class="task" onclick="window.callAPI('tools/md5/'+ ByID('md5').value);">Get MD5 of above string</span>
+				<span class="task" onclick="window.callAPI('tools/md5/'+ disguiseSpecialChars(ByID('md5').value));">Get MD5 of above string</span>
 				<hr/>
 				<input id="b64enc" placeholder="String" type="text" value=""/>
-				<span class="task" onclick="window.callAPI('tools/base64Encode/'+ ByID('b64enc').value);">Encode above string to base64</span>
+				<span class="task" onclick="window.callAPI('tools/base64Encode/'+ disguiseSpecialChars(ByID('b64enc').value));">Encode above string to base64</span>
 				<hr/>
 				<input id="b64dec" placeholder="String" type="text" value=""/>
-				<span class="task" onclick="window.callAPI('tools/base64Decode/'+ ByID('b64dec').value);">Decode above string from base64</span>
+				<span class="task" onclick="window.callAPI('tools/base64Decode/'+ disguiseSpecialChars(ByID('b64dec').value));">Decode above string from base64</span>
 			</div>
         </div>
         <div class="sepr">&darr;</div>

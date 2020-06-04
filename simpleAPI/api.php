@@ -1,15 +1,46 @@
+<?php require_once "../../admin-ctrl/control-override.php"; new ControlOverride('Simple API', 'EN'); ?>
 <?php
-// /timezone/{timezone}/getTimeAndDate?format=xml (input timezone format e.g. Australia-Sydney)
-// /timezone/currentTimeZone/getTimeAndDate?format=json|xml
-
-// /tools/md5/{str}?format=json|xml (input str must not exceed 512 characters!)
-// /tools/base64Encode/{str}?format=json|xml (input str must be url_encoded, and must not exceed 512 characters)
-// /tools/base64Decode/{str}?format=json|xml (output str must be url_encoded, and must not exceed 512 characters)
-
 	class SimpleAPI
 	{
 		const INVALID_REQUEST = "Error: Invalid request. A request must be made in this format: /{category}/{task}/{input}?format={xml or json}&key={access key}";
 		const REQUIRED_ARGUMENTS = 3; // simpleAPI/{one}/{two}/{three}
+
+		private function removeSpecialCharsDisguise($str)
+		{
+			$input = $str;
+			$output = "";
+			
+			$specialChars = [
+				["\"", "[01]"],
+				["`", "[02]"],
+				["!", "[03]"],
+				["@", "[04]"],
+				["#", "[05]"],
+				["$", "[06]"],
+				["%", "[07]"],
+				["^", "[08]"],
+				["&", "[09]"],
+				["*", "[10]"],
+				["{", "[11]"],
+				["}", "[12]"],
+				["|", "[13]"],
+				["<", "[14]"],
+				[">", "[15]"],
+				["=", "[16]"],
+				["/", "[17]"],
+				[" ", "+"]
+			];
+			
+			for ($i = 0; $i < strlen($str); ++$i)
+			{
+				for ($j = 0; $j < sizeof($specialChars); ++$j)
+				{
+					$input = str_replace($specialChars[$j][1] , $specialChars[$j][0], $input);
+				}
+			}
+			
+			return $input;
+		}
 
 		private function isRequestStructureCorrect($request)
 		{
@@ -72,15 +103,22 @@
 			
 			return in_array($input_timezone, $allTimezones);
 		}
+		
+		private function sanitize($input)
+		{
+			$output = $this->removeSpecialCharsDisguise($input);
+
+			return htmlspecialchars(stripslashes($output));
+		}
 
 		private function runCategoryWithOptions($request)
 		{
 			$requestData = explode("/", $request);
 
-			$format = $_GET["format"];
-			$category = $requestData[0];
-			$task = $requestData[1];
-			$input = $requestData[2];
+			$format = $this->sanitize($_GET["format"]);
+			$category = $this->sanitize($requestData[0]);
+			$task = $this->sanitize($requestData[1]);
+			$input = $this->sanitize($requestData[2]);
 			
 			$output = "";
 
