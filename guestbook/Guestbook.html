@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <script src="angular.min.js"></script>
+        <style type="text/css">
+            * {font-family:verdana;}
+
+            em strong {text-decoration:underline;}
+
+            form,table.guestbook {margin:auto; margin-bottom:50px;}
+
+            h1 {text-align:center;}
+
+            hr {background-color:#0080ff; border-width:0px; height:1px;}
+
+            table.guestbook {text-align:left;}
+            table td {padding:10px;}
+            table td:nth-child(3) {width:200px;}
+            table tr:nth-child(odd) {background-color:#0080ff; color:#fff;}
+            table tr:nth-child(even) {background-color:rgb(137,192,254);}
+            table tr:nth-child(1) {background-color:#fff; color:#000;}
+
+            @media(max-width:767px)
+            {
+                div.v89gb {margin:auto; text-align:center; width:100%;}
+                form {width:100%;}
+                input,textarea {margin:10px auto; padding:5px; width:90%;}
+                input[type="submit"] {background-color:#fff; border:1px #0080ff solid; color:#0080ff; font-size:18px; padding:10px;
+                    transition:background-color,color,0.5s; width:94%;}
+                input[type="submit"]:active {background-color:#0080ff; color:#fff;}
+                table {border-spacing:0px!important; width:100%;}
+                table td:nth-child(2),table td:nth-child(4) {display:none;}
+                table td[colspan="4"] {display:table-cell;}
+                textarea {height:100px; width:91%;}
+            }
+            @media(min-width:768px)
+            {
+                div.v89gb {margin:auto; text-align:center; width:50%;}
+                form span {display:inline-block; text-align:left; width:300px;}
+                input,textarea {margin:10px auto; padding:5px; width:300px;}
+                input[type="submit"] {background-color:#fff; border:1px #0080ff solid; color:#0080ff; font-size:18px; padding:10px;
+                    transition:background-color,color,0.5s; width:310px;}
+                input[type="submit"]:hover {background-color:#0080ff; color:#fff; cursor:pointer;}
+                textarea {height:100px;}
+            }
+        </style>
+        <title>
+            Guestbook - V89
+        </title>
+    </head>
+    <body>
+        <div class="v89gb" id="v89guestbook" ng-app="v89guestbook" ng-controller="formObj">
+            <h1>Guestbook</h1>
+            <form ng-submit="addRowAsyncAsJSON();" role="form">
+                <input maxlength="30" name="user_name" ng-model="user_name" placeholder="Name" type="text"/><br/>
+                <input maxlength="30" name="user_mail" ng-model="user_mail" placeholder="E-mail address" type="text"/><br/>
+                <textarea maxlength="40" name="user_comments" ng-model="user_comments" placeholder="Your comments here..."></textarea>
+                <br/><input type="submit" value="Sign"/><br/>
+                <span ng-bind-html="SignResponse | unsafe"></span>
+            </form>
+            <hr/>
+            <table class="guestbook">
+                <tr>
+                    <td colspan="4">Please sign my guestbook by leaving a comment using the form above.</td>
+                </tr>
+                <tr ng-repeat="x in names">
+                    <td>{{x.Name}}</td>
+                    <td>{{x.Email}}</td>
+                    <td>{{x.Comment}}</td>
+                    <td>{{x.Date}}</td>
+                </tr>
+            </table>
+            <hr/>
+            <p><a href="https://angularjs.org/" target="_blank" title="This Guestbook was built using AngularJS."><img alt="Angular logo" src="angular.png" style="width:100px;"/></a></p>
+            <p>&copy; 2000 - {{thisYear}} by Voyager 89</p>
+        </div>
+        <script>
+            function convertData(data)
+            {
+                let returned_data = data;
+                let data_output="";
+
+                if (returned_data.res && returned_data.res[0].Errors == "1")
+                {
+                    data_output = "<u>Error/s detected</u>:<br/><br/>";
+                    data_output += (returned_data.res[1].Name.includes("<em>") ? "<strong>Name</strong>: " + returned_data.res[1].Name + "<br/>" : "") +
+                    (returned_data.res[2].Email.includes("<em>") ? "<strong>E-mail</strong>: " + returned_data.res[2].Email + "<br/>" : "") +
+                    (returned_data.res[3].Comments.includes("<em>") ? "<strong>Comments</strong>: " + returned_data.res[3].Comments : "");
+
+                    return data_output;
+                }
+                else {
+                    return "Posted!";
+                }
+            }
+
+            const gbook = angular.module('v89guestbook', []);
+
+            gbook.controller('formObj', ['$scope', '$http', function($scope, $http)
+			{
+                $scope.user_name = "";
+                $scope.user_mail = "";
+                $scope.user_comments = "";
+                $scope.thisYear = new Date().getFullYear();
+
+                $http.get("Signatures.php?records=1").then(
+					function (response)
+					{
+						$scope.names=response.data.records;
+					}
+				);
+
+                console.log("Records called!\n");
+
+                $scope.refreshRes = function()
+                {
+                    $http.get("Signatures.php?records=1").then(
+						function(response)
+						{
+							$scope.names = response.data.records;
+						}
+					);
+
+                    console.log("Records called again!\n");
+                }
+
+                $scope.addRowAsyncAsJSON = function()
+				{
+		            const dataObj = {
+				        name : $scope.user_name,
+				        email : $scope.user_mail,
+				        comments : $scope.user_comments
+		            };
+
+                    $http.post('Signatures.php', dataObj).then(
+						function(response)
+						{
+							$scope.SignResponse = convertData(response.data);
+						}
+					).then(
+						function()
+						{
+							$http.get("Signatures.php?records=1").then(
+								function(response)
+								{
+									$scope.names = response.data.records;
+								}
+							);
+						}
+					);
+                };
+            }]);
+
+            // Allow HTML in Angular (TextNode) elements
+            gbook.filter('unsafe', function($sce) {
+                return function(val) {
+                    return $sce.trustAsHtml(val);
+                };
+            });
+
+            gbook.directive("w3TestDirective", function(){
+                return {
+                    // template : "I was made in a directive constructor!"
+                };
+            });
+        </script>
+    </body>
+</html>
