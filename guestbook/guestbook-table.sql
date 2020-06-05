@@ -1,0 +1,6 @@
+CREATE TABLE `guestbook`(
+	UserMail VARCHAR(30) PRIMARY KEY NOT NULL,
+	UserDate DATETIME,
+	UserName VARCHAR(30),
+	UserComments VARCHAR(40)
+);

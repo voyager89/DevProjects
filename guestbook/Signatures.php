@@ -4,6 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 $SQL;
 
+// Sanitizer - no tags allowed, and no slashes
 function sanitize($text)
 {
 	return htmlspecialchars(stripslashes($text));
@@ -11,17 +12,17 @@ function sanitize($text)
 
 function V89DB()
 {
-	// this has been intentionally left blank; security measures I trust you'll agree
+	// database details left out
 	$SQL_C = new mysqli("","","","") or die("Cannot connect to database! Please try again later.");
 	
 	return $SQL_C;
 }
 
+// Profanity list - checks if string contains swearing (it's been omitted; you can come up with your own)
 function isProfane($str)
 {
     $result = false;
     $restrictedList = [
-	// you can fill this out yourself
 		"...",
 		"...",
 		"..."
@@ -38,6 +39,7 @@ function isProfane($str)
     return $result;
 }
 
+// Check if the e-mail of this signature already exists
 function duplicateMail($ML)
 {
 	global $SQL;
@@ -57,8 +59,16 @@ function duplicateMail($ML)
     return $mailExists;
 }
 
+// More user-friendly date format
+function rearrangeDate($date)
+{
+	return date("d/m/Y", strtotime($date));
+}
+
+// Get posted input
 $input = file_get_contents("php://input");
 
+// Fetch all signatures
 if (isset($_GET["records"]))
 {
     $recs = "";
@@ -66,12 +76,12 @@ if (isset($_GET["records"]))
 	global $SQL;
 	$SQL = V89DB();
 
-    $SQL_GO = $SQL->query("SELECT UserMail,DATE_FORMAT(UserDate,'%d/%m/%Y') AS UserDate,UserName,UserComments FROM `guestbook`;");
+    $SQL_GO = $SQL->query("SELECT UserMail,UserDate,UserName,UserComments FROM `guestbook` ORDER BY UserDate DESC;");
 
     while ($SQL_RS = $SQL_GO->fetch_assoc())
     {
         $recs .= (strlen($recs) > 1 ? "," : "");
-        $recs .= '{"Date":"'.$SQL_RS["UserDate"].'","Name":"'.$SQL_RS["UserName"].'","Email":"'.$SQL_RS["UserMail"].'","Comment":"'.base64_decode($SQL_RS["UserComments"]).'"}';
+        $recs .= '{"Date":"'.rearrangeDate($SQL_RS["UserDate"]).'","Name":"'.$SQL_RS["UserName"].'","Email":"'.$SQL_RS["UserMail"].'","Comment":"'.base64_decode($SQL_RS["UserComments"]).'"}';
     }
 
     $SQL->close();
@@ -80,41 +90,48 @@ if (isset($_GET["records"]))
 }
 else if (strlen($input) > 1)
 {
+	// A new signature?
+	
     $request = json_decode($input);
     $name = $request->name;
     $email = $request->email;
     $comm = $request->comments;
-    //---
+
     $errors = false;
     $name_TS = $name;
     $email_TS = $email;
     $comm_TS = $comm;
 
+	// Check the name
     if (strlen(trim($name_TS)) > 30 || strlen(trim($name_TS)) < 3 || !ctype_alpha(str_replace(' ', '', $name_TS)) || isProfane($name_TS))
     {
         $errors = true;
         $name_TS = "<em>Name must be between 3 and 30 [Aa-Zz] characters, and no profanity allowed!</em>";
     }
 
+	// Check the e-mail
     if (!filter_var($email_TS, FILTER_VALIDATE_EMAIL) || duplicateMail($email_TS) || isProfane($email_TS))
     {
         $errors = true;
         $email_TS = "<em>E-mail address must be between 10 and 30 characters, or it already exists, or it's using profanity!</em>";
     }
 
+	// Check the comments
     if (strlen(trim($comm_TS)) > 40 || strlen(trim($comm_TS)) < 5 || isProfane($comm_TS))
     {
         $errors = true;
         $comm_TS = "<em>Comments must be between 5 and 40 characters, and be civil!</em>";
     }
 
-    //-----------------
+    // If the checks fail send back the reason
     if ($errors == true)
     {
         echo '{"res":[{"Errors":"'.$errors.'"},{"Name":"'.$name_TS.'"},{"Email":"'.$email_TS.'"},{"Comments":"'.$comm_TS.'"},{"Date":"'.date("Y-m-d").'"}]}';
     }
     else
 	{
+		// Checks have passed - all good to sign the guestbook!
+
 		global $SQL;
 		$SQL = V89DB();
 
