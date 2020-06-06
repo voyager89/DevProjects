@@ -1,0 +1,5 @@
+CREATE TABLE(
+	NoteDate DATETIME PRIMARY KEY,
+	NoteMessage VARCHAR(1000),
+	NoteFile VARCHAR(150)
+)

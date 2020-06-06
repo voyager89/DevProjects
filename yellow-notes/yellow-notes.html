@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script type="text/javascript">
+            let noteRef = null;
+            let noteTasker = null;
+
+            let selectedColor = 2;
+
+            function ByID(obj)
+            {
+                return document.getElementById(obj);
+            }
+
+            function changeColor(color, element=null)
+            {
+                let backColor = "";
+                let boardColor = "";
+                let borderColor = "";
+                
+                selectedColor = color;
+
+                let noteCSS = document.querySelectorAll(".note");
+
+                let themeClass = document.querySelectorAll(".theme");
+
+                if (element)
+                {
+                    for (let i = 0; i < themeClass.length; ++i)
+                    {
+                        themeClass[i].style.borderStyle = "outset";
+                    }
+
+                    element.style.borderStyle = "inset";
+                }
+
+                switch (color)
+                {
+                    case 1:
+                        backColor = "#ddf";
+                        boardColor = "#ccf";
+                        borderColor = "#00f";
+                    break;
+                    case 2:
+                        backColor = "#ffc";
+                        boardColor = "#ff8";
+                        borderColor = "#bb8";
+                    break;
+                    case 3:
+                        backColor = "#bfb";
+                        boardColor = "#080";
+                        borderColor = "#0b0";
+                    break;
+                    case 4:
+                        backColor = "#fbb";
+                        boardColor = "#f88";
+                        borderColor = "#b00";
+                    break;
+                }
+
+                document.getElementById("board").style.backgroundColor = boardColor;
+
+                for (let j = 0; j < noteCSS.length; ++j)
+                {
+                    noteCSS[j].style.borderColor = borderColor;
+                    noteCSS[j].style.backgroundColor = backColor;
+                }
+            }
+
+            function deleteFile(noteID)
+            {
+                if (window.confirm("Are you sure you want to delete this file?")) {
+                    window.actionNote(4, noteID);
+                }
+            }
+
+            function actionNote(task, noteID, noteData = null)
+            {
+                // task 0 - delete, 1 - edit, 2 - post new, 3 - load notes, 4 - delete file, 5 - add file
+				
+				if ((task == 1 || task == 2) && noteData.length > 110)
+				{
+					window.alert("You cannot post a note with more than 110 characters!");
+					return;
+				}
+				
+                ByID("postStatus").innerText = (task === 3 ? "" : "Please wait...");
+
+                let noteRequest = "task=" + task + "&noteID=" + noteID + "&noteData=" + (noteData ? window.encodeURIComponent(noteData) : null);
+
+                const XHR = new XMLHttpRequest();
+                XHR.open("POST", "note-poster.php", true);
+
+                if (task === 5)
+                {
+                    const formDataObject = new FormData();
+                    formDataObject.append('task', task);
+                    formDataObject.append('noteID', noteID);
+                    formDataObject.append("attachFile", noteData);
+                    noteRequest = formDataObject;
+                }
+                else {
+                    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                }
+
+                XHR.onreadystatechange = function()
+                {
+                    if (this.readyState === 4 && this.status === 200)
+                    {
+                        ByID("board").innerHTML = this.responseText;
+                        window.changeColor(selectedColor, null);
+                        
+                        if (task !== 3)
+                        {
+                            ByID("postStatus").innerText = "Done.";
+                            window.setTimeout(function()
+                            {
+                                ByID("postStatus").innerText = "";
+                            }, 5 * 1000);
+                        }
+                    }
+                };
+                XHR.send(noteRequest);
+            }
+
+            function showMessageBox(task, objRef = null)
+            {
+                const msgBox = ByID('message');
+				const msgBoxBtn = document.getElementById("postBtn");
+                const msgBoxWindow = document.querySelector('.newNote');
+
+                switch (task)
+                {
+                    case 0: // Delete
+                        if (window.confirm("Are you sure you want to delete this note? If there is a file attached, it will be deleted as well."))
+                            window.actionNote("0", objRef, null);
+                    break;
+                    case 1: // New
+                        noteRef.value = objRef;
+                        noteTasker.value = "2";
+						msgBoxBtn.innerText = "POST";
+                        msgBoxWindow.style.visibility='visible';
+                        msgBox.value = '';
+						setTextLimit(ByID("message"), "textLimit");
+                        msgBox.focus();
+                    break;
+                    case 2: // Edit
+                        noteRef.value = objRef;
+                        noteTasker.value = "1";
+						msgBoxBtn.innerText = "EDIT";
+                        msgBoxWindow.style.visibility='visible';
+                        msgBox.value = ByID(objRef).children[1].innerText;
+						setTextLimit(ByID("message"), "textLimit");
+                        msgBox.focus();
+                    break;
+                }
+            }
+            
+            function returnToTop()
+            {
+            	let Y_COORD = window.scrollY;
+            	let scroller = window.setInterval(() => {
+            		if (Y_COORD > 0)
+            		{
+            			Y_COORD -= 10;
+	            		window.scrollTo(0, Y_COORD);
+	            	}
+					else {
+						window.clearTimeout(scroller);
+					}
+            	}, 25);
+            }
+
+            function hideMessageWin()
+            {
+                document.querySelector('.newNote').style.visibility = 'hidden';
+            }
+			
+			function setTextLimit(element, textLimit)
+			{
+				const noteSize = element.value.trim().length;
+				const sizeDifference = (110 - noteSize);
+				
+				ByID(textLimit).innerText = sizeDifference + " characters remaining";
+				
+				if (sizeDifference < 0)
+					ByID(textLimit).style.color = "#f00";
+				else
+					ByID(textLimit).style.color = "#000";
+			}
+
+            window.onscroll = function()
+            {
+                if (window.scrollY > 100)
+                {
+                    ByID("topper").style.visibility = "visible";
+                }
+                else {
+                    ByID("topper").style.visibility = "hidden";
+                }
+            };
+
+            window.onload = function () {
+                let newNotePositionX = 0;
+
+                window.actionNote(3, null, "*");
+				
+				noteRef = ByID("noteRef");
+                noteTasker = ByID("noteTasker");
+
+                if (window.screen.width <= 800)
+                {
+                    ByID("topper").style.left = (document.body.offsetWidth / 2) - (150 / 2) + "px";
+                }
+
+				document.getElementById("thisYear").innerText = new Date().getFullYear();
+                document.querySelector(".newNote").setAttribute("style","visibility:hidden;");
+            };
+        </script>
+        <style type="text/css">
+            a.theme {border-width:5px; border-style:outset; display:inline-block; height:20px; vertical-align:middle; width:20px;}
+            a.t1 {background-color:#bbf; border-color:#00f;}
+            a.t2 {background-color:#ffc; border-color:#bb8;}
+            a.t3 {background-color:#bfb; border-color:#0b0;}
+            a.t4 {background-color:#fbb; border-color:#b00;}
+
+            button {background-color:#ffc; border:1px #000 solid; box-shadow:5px 5px 5px #333; cursor:pointer; padding:10px;}
+            button:hover,button:active {background-color:#fff;}
+
+            @media(max-width:799px)
+            {
+                body {background-color:#fc8;}
+                button#topper {bottom:50px; position:fixed; width:150px; z-index:9;}
+
+                div#board {padding:15px 0px; text-align:center; width:100%;}
+                div.note {
+                    background-color:#ffc; box-shadow:5px 5px 5px #333; font-family:arial; font-size:10px;
+                    height:220px; margin:10px auto; padding:10px; width:85%;
+                }
+
+                div.newNote {
+                    background-color:#ffc; height:320px; left:0px; padding:10px;
+                    position:absolute; text-align:center; top:100px; width:100%;
+                }
+                div.newNote textarea {
+                    background-color:#ffc; border-width:0px; font-family:arial;
+                    font-size:18px; height:250px; width:80%;
+                }
+            }
+            @media(min-width:800px)
+            {
+                button#topper {display:none;}
+
+                div#board {background-color:#fc8; border:1px #000 solid; padding:5px; text-align:center;}
+                div.note {
+                    background-color:#ffc; box-shadow:5px 5px 5px #333; display:inline-block; font-family:arial;
+                    font-size:10px; height:220px; margin:10px; padding:10px; width:250px;
+                }
+
+                div.newNote {
+                    background-color:#ffc; border:1px #000 solid; box-shadow:5px 5px 5px #333; left:0px;
+                    padding:10px; position:absolute; text-align:center; top:0px; width:300px;
+                }
+                div.newNote textarea {background-color:#ffc; border-width:0px; font-family:arial; font-size:18px; height:250px; resize:none; width:250px;}
+            }
+            
+            div.title {font-size:24px; text-align:center; text-decoration:underline;}
+            div.message {font-size:18px; height:110px; margin-top:10px; text-align:center;}
+            div.links {bottom:0px; position:relative;}
+            div hr {border:1px #000 solid; color:#000;}
+            div.links a:nth-child(2) {float:right;}
+            div.links a:nth-child(3) {float:left;}
+            div.links a {color:#000; font-weight:bold; padding:10px;}
+            div.links a:hover {color:#f00;}
+
+			div.right {float:right;}
+
+            footer {margin:20px 0px; text-align:center;}
+        </style>
+        <title>Yellow Notes - V89 Tools</title>
+    </head>
+    <body>
+        <button id="topper" onclick="window.returnToTop();" style="visibility:hidden;">Return to top</button>
+
+        <button onclick="window.showMessageBox(1);">Post New Yellow Note</button> <div class="right"><a class="theme t1" href="##" onclick="window.changeColor(1, this); return false;"></a> <a class="theme t2" href="##" onclick="window.changeColor(2, this); return false;" style="border-style:inset;"></a> <a class="theme t3" href="##" onclick="window.changeColor(3, this); return false;"></a> <a class="theme t4" href="##" onclick="window.changeColor(4, this); return false;"></a></div>
+
+        &nbsp;&nbsp;
+        <span id="postStatus"></span>
+        <hr/>
+        <div id="board">
+
+        </div>
+
+	<div class="newNote" style="left:0px; visibility:hidden;">
+		<input id="noteRef" type="hidden" value=""/>
+		<input id="noteTasker" type="hidden" value="1"/>
+
+		<textarea id="message" oninput="window.setTextLimit(this, 'textLimit');"></textarea><br/>
+		<span id="textLimit" style="color:#000;">110 characters remaining</span>
+		<br/><br/>
+		<button id="postBtn" onclick="window.actionNote(ByID('noteTasker').value, ByID('noteRef').value, ByID('message').value); window.hideMessageWin();">POST IT</button>
+		<button onclick="window.hideMessageWin();">CANCEL</button>
+	</div>
+	<hr/>
+        <footer>
+            2000 - <span id="thisYear"></span> by Voyager 89
+        </footer>
+    </body>
+</html>
