@@ -273,9 +273,19 @@
 							$imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 							
 							// Check if image file is a actual image or fake image
-							$check = getimagesize($imgFile);
+							$finfo = finfo_open(FILEINFO_MIME_TYPE);
+							$checkImageIsReal = finfo_file($finfo, $imgFile);
+							finfo_close($finfo);
 							
-							if ($check !== false)
+							// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+							// Image must be a valid image and only certain file formats are allowed
+							if (
+								$checkImageIsReal && (
+									strpos($checkImageIsReal, "image/jpeg") !== false ||
+									strpos($checkImageIsReal, "image/png") !== false ||
+									strpos($checkImageIsReal, "image/gif") !== false
+								)
+							)
 							{
 								/*
 								$this->updateNotice($this->updateProPic, "070", "File is an image - ".$check["mime"].".");
@@ -285,7 +295,7 @@
 							else {
 								$this->uploadOk = 0;
 
-								$this->updateNotice($this->updateProPic, "f00", "This file is not an image. Please try again.");
+								$this->updateNotice($this->updateProPic, "f00", "This file is not an image, or not the allowed format. Only JPG, JPEG, PNG and GIF files are allowed. Please try again.");
 								
 							}
 							
@@ -303,14 +313,6 @@
 								$this->uploadOk = 0;
 
 								$this->updateNotice($this->updateProPic, "f00", [", and your photo is too large.", "Photo is too large."]);
-							}
-							
-							// Allow certain file formats
-							if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" )
-							{
-								$this->uploadOk = 0;
-
-								$this->updateNotice($this->updateProPic, "f00", "Sorry; only JPG, JPEG, PNG and GIF files are allowed.");
 							}
 							
 							// Check if $this->uploadOk is set to 0 by an error
@@ -443,7 +445,8 @@
 				{
 					if ($this->userSettings != '[Deleted]')
 					{
-						$proImgDesc .= '	<img alt="Profile Photo" src="'.$this->userProfileImage.'" style="border:1px #000 solid; width:150px;"/>';
+						$versionImage = microtime(true); // prevent browser caching image
+						$proImgDesc .= '	<img alt="Profile Photo" src="'.$this->userProfileImage.'?v='.$versionImage.'" style="border:1px #000 solid; width:150px;"/>';
 					}
 
 					$proImgDesc .= $this->userDescription."\n";
@@ -470,9 +473,10 @@
 				
 				if (strlen($this->userProfileImage) > 5) // User image
 				{
+					$versionImage = microtime(true); // prevent browser from caching
 					/*$imgDT=explode("/",$userProImg);
 					$userPrIM=$imgDT[0]."/".base64_decode($imgDT[1]); */
-					$userPrIM = $this->userProfileImage;
+					$userPrIM = $this->userProfileImage."?v=$versionImage";
 				}
 				else
 				{

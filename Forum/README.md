@@ -22,6 +22,13 @@
 
 ***
 
+### Updates - version 1.2.1
+
+- Preventing browser from caching images
+- Enhanced image file checking - preventing unwanted types and possible injections
+
+***
+
 ## Future features - version 1.3
 
 - Profile:
