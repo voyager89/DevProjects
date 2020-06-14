@@ -25,23 +25,34 @@
 		{
 			$isSafe = true;
 
-			$fileData = file_get_contents($file);
+			// Get file type
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$getFileType = finfo_file($finfo, $file);
+			finfo_close($finfo);
 
-			// File checks happen here; to disable a certain file check simply comment it out
-			if (
-				strripos($file, ".phtml") !== false		||	// No PHP files allowed!
-				strripos($file, ".php") !== false 		|| 	// No PHP files allowed!
-				strripos($file, ".exe") !== false		||	// No executable files allowed!
-				strripos($fileData, "<?php") !== false	||	// No files containing PHP tags allowed!
-				strripos($fileData, "<script") !== false	// No files containg HTML script tags allowed!
-			)
+			// No executable or other application-type files allowed!
+			if (strripos($getFileType, "application/") === false && strripos($getFileType, "x-dosexec") === false)
 			{
+				$fileData = file_get_contents($file);
+
+				// File checks happen here; to disable a certain file check simply comment it out
+				if (
+					strripos($file, ".phtml") !== false		||	// No PHP files allowed!
+					strripos($file, ".php") !== false 		|| 	// No PHP files allowed!
+					strripos($fileData, "<?php") !== false	||	// No files containing PHP tags allowed!
+					strripos($fileData, "<script") !== false	// No files containg HTML script tags allowed!
+				)
+				{
+					$isSafe = false;
+				}
+				
+				$fileData = null;
+				unset($fileData);
+			}
+			else {
 				$isSafe = false;
 			}
-			
-			$fileData = null;
-			unset($fileData);
-			
+
 			return $isSafe;
 		}
 
