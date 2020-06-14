@@ -19,25 +19,24 @@
 			
 			$pageList = [
 				// page, takes arguments
-				/***/ ["3d_modelling", true],		// 3d_modelling-1 / 3d_modelling-2
-				/***/ ["404", true],				// 404-{NOTFOUND}
-				["about", false],					// about.html
-				/***/ ["aliens_ufo", true],			// aliens_ufo-1 / aliens_ufo-2 (GET)
-				/***/ ["astronomy", true],			// astronomy-1 / astronomy-2 (GET)
+				["3d_modelling", true],
+				["404", true],
+				["about", false],
+				["aliens_ufo", true],
+				["astronomy", true],
 				["checkusername", false],
-				/***/ ["cs_php", true],				// cs_php-1 / cs_php-2 (GET)
-				/***/ ["delete", true],				// delete-A-1-1 / delete-1-2 (title and comment id) (GET)
-				["delete_acc", true],				// delete_acc [confirmDelete] (POST)
-				/***/ ["edit", true], 				// edit-A-1-1.html
-				/***/ ["index", true], 				// index-log_off (GET) / index [user_name] / index [pass_word] (POST) / index [athcmd] (POST)
-				["logoff", false],					// logoff.html
-				/***/ ["profile", true],			// profile-user-{user} (GET) / profile-preview (GET) / profile [prosign] (POST) / profile [proPic] (FILE)
-				["register", false],				// register [user_mail],[user_pwd],[last_name],[first_name],[athcmd],[user_gender],[dob_year],[dob_month],[dob_day] (POST)
-				/***/ ["reply", true],				// reply-A-1-1 (title and comment id) (GET) / reply [postTitle],[postMsg] (POST)
-				/***/ ["success", false]			// success
+				["cs_php", true],
+				["delete", true],
+				["delete_acc", true],
+				["edit", true],
+				["index", true],
+				["logoff", false],
+				["profile", true],
+				["register", false],
+				["reply", true],
+				["success", false]
 			];
 			
-			//return in_array($document, $pageList);
 			for ($i = 0; $i < sizeof($pageList); ++$i)
 			{
 				$page = $pageList[$i][0];
@@ -49,7 +48,7 @@
 					{
 						$docAnalysis["valid"] = true;
 					}
-					else if (strpos($document, "-") !== false)
+					else if (strpos($document, "-") !== false) // parameters
 					{
 						$data = explode("-", $document);
 						
@@ -79,7 +78,7 @@
 									$docAnalysis["valid"] = true;
 								}
 							break;
-							case "3d_modelling": // 3d_modelling-1 OR 3d_modelling-post
+							case "3d_modelling": // e.g. 3d_modelling-1 OR 3d_modelling-post
 							case "aliens_ufo":
 							case "astronomy":
 							case "cs_php":
@@ -96,7 +95,7 @@
 							break;
 							case "delete":
 							case "edit":
-							case "reply": // reply-A-1-1
+							case "reply": // e.g. reply-A-1-1
 								if (
 									sizeof($data) == 4 &&
 									ctype_alpha($data[1]) && sizeof($data[1]) == 1 &&
@@ -150,20 +149,30 @@
 									new UserControl($queryString);
 								}
 							break;
-							case "index":			new TopicIndex("log_off");											break;
+							case "index":
+								new TopicIndex("log_off");
+							break;
 							case "404":
 								if (sizeof($data) == 2 && sizeof(trim($data[1])) > 0)
 								{
 									new GeneralNavigation("404", $data[1]);
 								}
 							break;
-							case "3d_modelling": 	new TopicsList("B", "3D Modelling", "3d_modelling", $data[1]);		break;
-							case "aliens_ufo": 		new TopicsList("D", "Aliens &amp; UFOs", "aliens_ufo", $data[1]);	break;
-							case "astronomy":		new TopicsList("A", "Astronomy", "astronomy", $data[1]); 			break;
-							case "cs_php":			new TopicsList("C", "C# or PHP", "cs_php", $data[1]);				break;
+							case "3d_modelling":
+								new TopicsList("B", "3D Modelling", "3d_modelling", $data[1]);
+							break;
+							case "aliens_ufo":
+								new TopicsList("D", "Aliens &amp; UFOs", "aliens_ufo", $data[1]);
+							break;
+							case "astronomy":
+								new TopicsList("A", "Astronomy", "astronomy", $data[1]);
+							break;
+							case "cs_php":
+								new TopicsList("C", "C# or PHP", "cs_php", $data[1]);
+							break;
 							case "delete":			
 							case "edit":
-							case "reply": // reply-A-1-1
+							case "reply": // e.g. reply-A-1-1
 								if (
 									sizeof($data) == 4 &&
 									ctype_alpha($data[1]) && sizeof($data[1]) == 1 &&
@@ -210,17 +219,21 @@
 							case "profile":
 								new UserControl();
 							break;
-							case "register"; // POST elements
-								new Registration(); // continue here <<<< TESTING TIME!!!
+							case "register":
+								new Registration();
 							break;
-							case "delete_acc": // POST element
+							case "delete_acc": // delete account
 								new TopicControl("delete_acc");
 							break;
 							case "success":
 								// For successfully registered users
 								$newUser = [];
 								
-								if (isset($_SESSION["v89forum_logstat"]) && strlen($_SESSION["v89forum_logstat"]) > 0 && strpos($_SESSION["v89forum_logstat"], ",0") !== false)
+								if (
+									isset($_SESSION["v89forum_logstat"]) &&
+									strlen($_SESSION["v89forum_logstat"]) > 0 &&
+									strpos($_SESSION["v89forum_logstat"], ",0") !== false
+								)
 								{
 									$newUser = explode(",", $_SESSION["v89forum_logstat"]);
 									$_SESSION["v89forum_logstat"] = $newUser[0];
@@ -273,9 +286,6 @@
 	</body>
 </html>
 BLOCK;
-							break;
-							case "user-post-history":
-								
 							break;
 							default: // I don't know what this is; return 404
 								new GeneralNavigation("404", $url);
