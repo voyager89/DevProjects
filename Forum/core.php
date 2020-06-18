@@ -54,8 +54,6 @@
 			
 			// local testing
 			//$this->SQL = new mysqli("","","","") ?? exit("Cannot connect to database due to: ".$this->SQL->connect_error);
-			
-			return $this->SQL;
 		}
 		
 		protected function modifyRecords($data) // DELETE FROM, INSERT INTO, UPDATE - $SQL_C->affected_rows
@@ -70,6 +68,7 @@
 				$recordsModified = true;
 
 			$this->SQL->close();
+			$this->SQL = null;
 
 			return $recordsModified;
 		}
@@ -89,6 +88,7 @@
 					array_push($records, $row);
 
 			$this->SQL->close();
+			$this->SQL = null;
 
 			return sizeof($records) > 0 ? $records : false;
 		}
