@@ -40,6 +40,7 @@
 					strripos($file, ".phtml") !== false		||	// No PHP files allowed!
 					strripos($file, ".php") !== false 		|| 	// No PHP files allowed!
 					strripos($fileData, "<?php") !== false	||	// No files containing PHP tags allowed!
+					strripos($fileData, "<?=") !== false	||	// (as above)
 					strripos($fileData, "<script") !== false	// No files containg HTML script tags allowed!
 				)
 				{
