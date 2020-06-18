@@ -55,7 +55,7 @@
 				(isset($_GET["format"]) && $_GET["format"] != "json" && $_GET["format"] != "xml")
 			)
 			{
-				exit(self::INVALID_REQUEST);
+				exit($this->changeToSelectedFormat("json", ["Error", self::INVALID_REQUEST]));
 			}
 		}
 
@@ -157,7 +157,7 @@
 						);
 					}
 					else {
-						exit("Error: bad timezone request - ' $task ', ' $input '");
+						exit($this->changeToSelectedFormat($format, ["Error", "Bad timezone request - ' $task ', ' $input '"]));
 					}
 				break;				
 				case "tools":
@@ -178,11 +178,11 @@
 							$output = $this->changeToSelectedFormat($format, ["md5" => md5($input)]);
 						break;
 						default:
-							exit("Unrecognized task for $category: ' $task '.");
+							exit($this->changeToSelectedFormat($format, ["Error", "Unrecognized task for $category: ' $task '."]));
 					}
 				break;
 				default:
-					exit("Unrecognized category: ' $category '.");
+					exit($this->changeToSelectedFormat($format, ["Error", "Unrecognized category: ' $category '."]));
 			}
 			
 			echo $output;
@@ -192,7 +192,7 @@
 		{
 			if (is_null($key))
 			{
-				exit("Error: no access key provided. Request denied.");
+				exit($this->changeToSelectedFormat("json", ["Error", "No access key provided. Request denied."]));
 			}
 			else {
 				// Access key must be: simpleAPI123 encoded as base64
@@ -200,7 +200,7 @@
 				
 				if ($readKey == false || $readKey != "simpleAPI123")
 				{
-					exit("Error: invalid key provided");
+					exit($this->changeToSelectedFormat("json", ["Error", "Invalid key provided"]));
 				}
 			}
 		}
@@ -223,11 +223,11 @@
 					$this->runCategoryWithOptions($request);
 				}
 				else {
-					exit(self::INVALID_REQUEST);
+					exit($this->changeToSelectedFormat("json", ["Error", self::INVALID_REQUEST]));
 				}
 			}
 			else {
-				exit("Error: null request!");
+				exit($this->changeToSelectedFormat("json", ["Error", "Null request!"]));
 			}
 		}
 	}
