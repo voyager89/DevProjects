@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link href="style.css?v2" media="screen" rel="stylesheet"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<script src="client-process.js?v5" type="text/javascript"></script>
+		<title>TalkTalk - V89 Chat Application</title>
+	</head>
+	<body onresize="documentWidth=document.body.offsetWidth; window.alignAboutBox(document.body.offsetWidth, document.body.offsetHeight)">
+		<nav>
+			<div class="left">
+				<a href="#" id="lnk_mobile_menu" onclick="window.showChatGroups(); return false;"><strong>&#9776;</strong></a>
+				<a href="#" id="lnk_about" onclick="window.showAboutBox(); return false;">About</a>
+			</div>
+			<div class="right">
+				<a href="#" id="lnk_logoff_right" onclick="window.doLogOff(); return false;" style="visibility:hidden;">Log Off</a>
+			</div>
+			<h1>Talk-Talk</h1>
+		</nav>
+		<main>
+			<div class="logScreen">
+				<h2>Pick a username</h2>
+				<br/><br/>
+				
+				<input maxlength="20" onkeydown="window.sendMessage(event, this, 'checkUsernameAndInsert');" placeholder="Username here..." type="text" value=""/>
+
+				<div class="error">&nbsp;</div>
+				
+				<div style="font-family:arial; font-size:10px; margin:20px auto; text-transform:uppercase;">
+					THIS IS A PUBLIC CHATROOM.
+					<br/><br/>
+					THE USERNAME YOU PICK NOW MAY<br/>
+					BE TAKEN LATER BY SOMEONE ELSE.
+					<br/><br/>
+					IF THERE'S NO ACTIVITY FOR MORE THAN<br/>
+					30 MINUTES YOU WILL BE LOGGED OFF.
+				</div>
+			</div>
+
+			<section class="about" style="left:0px; top:0px; visibility:hidden;">
+				Chatting Application <strong>&quot;Talk-Talk&quot;</strong><br/>
+				Version 1.0 - Released on 07 July 2020<br/><br/>
+				Written in <em>JavaScript</em>, <em>Node JS</em>, <em>MySQL</em>
+				<br/><br/>
+				<a href="#" onclick="this.parentElement.style.visibility='hidden'; return false;">OK</a>
+			</section>
+			<section class="notice" style="visibility:hidden;">
+				ALL CHAT ROOM CONVERSATIONS ARE ERASED ONCE EVERY 24 HOURS; NEXT ERASURE WILL OCCUR IN
+				<span id="erase">
+					...
+				</span>
+			</section>
+			<section class="chatWindow" style="display:none;">
+				<div class="chatGroupsMOBILE" style="opacity:0; visibility:hidden;">
+					<a class="link" href="#" onclick="window.hideChatGroups(); return false;">X</a> <a class="link" href="#" onclick="window.showAboutBox(); return false;">&#9432;</a>
+					<div class="structure">			
+						<span class="title">Chat Groups</span>
+						<hr/>
+						<a class="room selected" href="#" onclick="window.loadChatRoom(this, 1); return false;">Cars Engines</a>
+						<a class="room" href="#" onclick="window.loadChatRoom(this, 2); return false;">Living in Sydney</a>
+						<a class="room" href="#" onclick="window.loadChatRoom(this, 3); return false;">Scuba Diving in Cairns</a>
+						<a class="room" href="#" onclick="window.loadChatRoom(this, 4); return false;">Surfing in Byron Bay</a>
+						<hr/>
+						
+						<span class="title">Online Users</span>
+						<hr/>
+						<div id="onlineUserListMOBILE" style="overflow-y:scroll;">
+							<!--<em>None at the moment</em>-->
+
+						</div>
+					</div>
+				</div>
+				<div class="grid-container">
+					<div class="chatGroupsDESKTOP">
+						<span class="title">Chat Groups</span>
+						<hr/>
+						<a class="room selected" href="#" onclick="window.loadChatRoom(this, 1); return false;">Cars Engines</a>
+						<a class="room" href="#" onclick="window.loadChatRoom(this, 2); return false;">Living in Sydney</a>
+						<a class="room" href="#" onclick="window.loadChatRoom(this, 3); return false;">Scuba Diving in Cairns</a>
+						<a class="room" href="#" onclick="window.loadChatRoom(this, 4); return false;">Surfing in Byron Bay</a>
+						<hr/>
+						
+						<span class="title">Online Users</span>
+						<hr/>
+						<div id="onlineUserListDESKTOP" style="overflow-y:scroll;">
+							<!--<em>None at the moment</em>-->
+						</div>
+					</div>
+					<div class="conversationBox" onmouseover="scrollChatWindow=false;" onmouseout="scrollChatWindow=true;">
+						&nbsp;
+					</div>
+					<div class="textInput">
+						<textarea maxlength="300" onkeydown="window.sendMessage(event, this, 'postMessage');" placeholder="Type in your message here..."></textarea>
+					</div>
+				</div>
+			</section>
+		</main>
+		<footer>
+			<a href="https://www.javascript.com/" target="_blank"><img src="js-logo.png"/></a><a href="https://www.nodejs.org/" target="_blank"><img src="nodejs-logo.png"/></a><a href="https://www.mysql.com/" target="_blank"><img src="mysql-logo.jpg"/></a>
+		</footer>
+	</body>
+</html>
