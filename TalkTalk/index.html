@@ -2,8 +2,9 @@
 <html lang="en">
 	<head>
 		<link href="style.css?v2" media="screen" rel="stylesheet"/>
+		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<script src="client-process.js?v5" type="text/javascript"></script>
+		<script src="client.js?v6.8" type="text/javascript"></script>
 		<title>TalkTalk - V89 Chat Application</title>
 	</head>
 	<body onresize="documentWidth=document.body.offsetWidth; window.alignAboutBox(document.body.offsetWidth, document.body.offsetHeight)">
@@ -22,11 +23,11 @@
 				<h2>Pick a username</h2>
 				<br/><br/>
 				
-				<input maxlength="20" onkeydown="window.sendMessage(event, this, 'checkUsernameAndInsert');" placeholder="Username here..." type="text" value=""/>
+				<input maxlength="20" onkeydown="window.sendMessage(event, this, 'checkUsernameAndInsert');" placeholder="Username here..." title="Enter username and press Return" type="text" value=""/>
 
 				<div class="error">&nbsp;</div>
 				
-				<div style="font-family:arial; font-size:10px; margin:20px auto; text-transform:uppercase;">
+				<div id="logOnMessage" style="font-family:arial; font-size:10px; margin:20px auto; text-transform:uppercase;">
 					THIS IS A PUBLIC CHATROOM.
 					<br/><br/>
 					THE USERNAME YOU PICK NOW MAY<br/>
@@ -45,7 +46,7 @@
 				<a href="#" onclick="this.parentElement.style.visibility='hidden'; return false;">OK</a>
 			</section>
 			<section class="notice" style="visibility:hidden;">
-				ALL CHAT ROOM CONVERSATIONS ARE ERASED ONCE EVERY 24 HOURS; NEXT ERASURE WILL OCCUR IN
+				<span id="toErase">ALL CHAT ROOM CONVERSATIONS ARE ERASED ONCE EVERY 24 HOURS; NEXT ERASURE WILL OCCUR IN</span>
 				<span id="erase">
 					...
 				</span>
@@ -53,7 +54,7 @@
 			<section class="chatWindow" style="display:none;">
 				<div class="chatGroupsMOBILE" style="opacity:0; visibility:hidden;">
 					<a class="link" href="#" onclick="window.hideChatGroups(); return false;">X</a> <a class="link" href="#" onclick="window.showAboutBox(); return false;">&#9432;</a>
-					<div class="structure">			
+					<div class="structure">
 						<span class="title">Chat Groups</span>
 						<hr/>
 						<a class="room selected" href="#" onclick="window.loadChatRoom(this, 1); return false;">Cars Engines</a>
@@ -90,7 +91,7 @@
 						&nbsp;
 					</div>
 					<div class="textInput">
-						<textarea maxlength="300" onkeydown="window.sendMessage(event, this, 'postMessage');" placeholder="Type in your message here..."></textarea>
+						<textarea maxlength="300" onkeydown="window.sendMessage(event, this, 'postMessage');" placeholder="Type in your message here..." title="Press Return to post"></textarea>
 					</div>
 				</div>
 			</section>
