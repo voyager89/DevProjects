@@ -1,0 +1,162 @@
+a.imgdata {
+	border-width:0px;
+	display:inline-block;
+	padding:10px 0px;
+}
+
+a.nav {
+	background-color:#fff!important;
+	color:#0037ff!important;
+	display:inline-block;
+	font-size:16px;
+	height:50px;
+	margin:10px 0px;
+	padding:12.5px;
+	text-decoration:none;
+	transition:background-color,color,0.5s;
+	width:50px;
+}
+
+img {
+	cursor:pointer;
+}
+
+@media (max-width:799px)
+{
+	a.imgdata:active {
+		background-color:unset;
+		color:#0037ff!important;
+		text-decoration:underline;
+	}
+	a.nav:active, a.sel {
+		background-color:#0037ff!important;
+		color:#fff!important;
+	}
+
+	input {
+		font-size:16px;
+		text-align:center;
+		width:90%;
+	}
+
+	section.search, section.outputNavigation {
+		margin:auto;
+		width:100%;
+	}
+	section.search a {width:5%;}
+
+	footer {text-align:center;}
+	footer a {display:block;}
+	footer span {visibility:hidden;}
+
+	nav a:active {
+		background-color:#0037ff;
+		color:#fff!important;
+	}
+}
+@media (min-width:800px)
+{
+	a.imgdata:hover {
+		background-color:unset;
+		color:#0037ff!important;
+		text-decoration:underline;
+	}
+
+	a.nav:hover, a.sel {
+		background-color:#0037ff!important;
+		color:#fff!important;
+	}
+
+	input {
+		font-size:24px;
+		text-align:left;
+		width:600px;
+	}
+
+	section.search, section.outputNavigation {
+		margin:auto;
+		width:700px;
+	}
+
+	footer {text-align:right;}
+	footer a {display:inline;}
+	footer span {visibility:visible;}
+
+	nav a:hover {
+		background-color:#0037ff;
+		color:#fff!important;
+	}
+}
+
+body {
+	font-family:verdana;
+	margin:0px;
+}
+
+footer {
+	color:#999;
+	padding:15px!important;
+}
+footer a {
+	color:#999;
+	text-decoration:none;
+	transition:color,0.5s;
+}
+footer a:hover {color:#f00;}
+
+nav {padding:25px;}
+nav a {
+	border:2px #0037ff solid;
+	color:#0037ff!important;
+	padding:10px 20px;
+	text-decoration:none;
+	transition:background-color,color,0.5s;
+}
+
+main {
+	background-image:linear-gradient(
+		135deg,
+		rgb(197,234,254),
+		rgb(197,234,254),
+		rgb(3,163,248),
+		rgb(3,163,248),
+		rgb(197,234,254),
+		rgb(3,163,248),
+		rgb(3,163,248),
+		rgb(197,234,254)
+	);
+	padding:30px 0px;
+	text-align:center;
+}
+main h1 {
+	text-shadow:5px 5px 5px #0037ff;
+	color:#fff;
+}
+
+section.search {
+	background-color:#fff;
+	font-size:30px;
+	margin:auto;
+	padding:10px;
+}
+section.search a {
+	font-size:20px;
+	text-decoration:none;
+	vertical-align:middle;
+}
+section.search input {
+	border-width:0px;
+	font-family:verdana;
+	padding:10px;
+	vertical-align:middle;
+}
+section.search input:focus {
+	border-color:#f00;
+	outline:none;
+}
+
+section.output {
+	margin:30px 5px;
+	min-height:500px;
+	padding:20px 5px;
+}

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<link href="style.css?v3.4" rel="stylesheet"/>
+		<link href="macy.css" rel="stylesheet"/>
+
+		<meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+		<script src="macy.min.js" type="text/javascript"></script>
+
+		<script src="react.min.js"></script>
+        <script src="react-dom.js"></script>
+        <script src="babel-browser.min.js"></script>
+		<script type="text/javascript">
+			// Used by the navigation (page) links
+			let pageControl = {
+				currentIndex: 1,	// current page
+				navigation: 1,		// navigation links control (in multiples of 10)
+				totalPages: 0,		// total pages
+				totalImages: 0		// total images
+			};
+
+			function getChar(charData)
+			{
+				return new DOMParser().parseFromString(charData, 'text/html').body.textContent;
+			}
+
+			// Get object or objects
+			function getObject(identifier, getAll = false)
+			{
+				return getAll ? document.querySelectorAll(identifier) : document.querySelector(identifier);
+			}
+		</script>
+		<script type="text/babel">
+			// Replaces newline character with a whitespace character
+			function removeNewline(data)
+			{
+				return data.replace(/\n/g, " ");
+			}
+
+			// Use Macy masonry library to sort images
+			function sortImages()
+			{
+				console.log("Sorting images!");
+				Macy({
+					container: '.imageOutput',
+					trueOrder: false,
+					waitForImages: false,
+					margin: 24,
+					columns: 6,
+					breakAt: {
+						1200: 5,
+						940: 3,
+						520: 2,
+						400: 1
+					}
+				});
+			}
+
+			window.onload = function()
+			{
+				class Footer extends React.Component
+				{
+					render()
+					{
+						return (
+							<footer>
+								<a href="https://www.reactjs.org/" target="_blank"><img height="50" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0xMS41IC0xMC4yMzE3NCAyMyAyMC40NjM0OCI+CiAgPHRpdGxlPlJlYWN0IExvZ288L3RpdGxlPgogIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSIyLjA1IiBmaWxsPSIjNjFkYWZiIi8+CiAgPGcgc3Ryb2tlPSIjNjFkYWZiIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiPgogICAgPGVsbGlwc2Ugcng9IjExIiByeT0iNC4yIi8+CiAgICA8ZWxsaXBzZSByeD0iMTEiIHJ5PSI0LjIiIHRyYW5zZm9ybT0icm90YXRlKDYwKSIvPgogICAgPGVsbGlwc2Ugcng9IjExIiByeT0iNC4yIiB0cmFuc2Zvcm09InJvdGF0ZSgxMjApIi8+CiAgPC9nPgo8L3N2Zz4K"/></a>
+								<span>{this.props.date} - by Voyager 89</span>
+							</footer>
+						);
+					}
+				}
+				class Navigation extends React.Component
+				{
+					constructor(props)
+					{
+						super(props);
+
+						this.aboutBox = this.aboutBox.bind(this);
+					}
+					aboutBox()
+					{
+						event.preventDefault();
+						window.alert("Image Searching application\n\n-built with ReactJS\n-using the Unsplash API (www.unsplash.com)\n\nReleased on 15 September 2020");
+					}
+					render()
+					{
+						return(
+							<nav>
+								<a href="#" onClick={this.aboutBox}>About</a>
+							</nav>
+						);
+					}
+				}
+				
+				class NavLinks extends React.Component
+				{
+					constructor(props)
+					{
+						super(props);
+						this.doSearch = this.doSearch.bind(this);
+					}
+
+					componentDidMount()
+					{
+						console.log("Navigation links refreshed!");
+					}
+
+					// Query the Unsplash API with requested keyword
+					doSearch(props)
+					{
+						event.preventDefault();
+
+						if (
+							props.target !== undefined && Number.isNaN(Number.parseInt(props.target.outerText))
+							&& (props.target.outerText == "<<" || props.target.outerText == ">>")
+						)
+						{
+							let output = [];
+
+							if (props.target.outerText == "<<")
+							{
+								pageControl.currentIndex = Math.max(Number(pageControl.currentIndex) - 10, 1);
+							}
+							else if (props.target.outerText == ">>")
+							{
+								pageControl.currentIndex = Math.min(Number(pageControl.currentIndex) + 10, pageControl.totalPages);
+							}
+
+							pageControl.navigation = (Math.ceil(pageControl.currentIndex / 10) * 10) - 10 + 1;
+							const index = Number(pageControl.navigation);
+
+							if (index > 10)
+							{
+								output.push(<a className="nav" href="#" onClick={this.doSearch}>&lt;&lt;</a>);
+							}
+
+							for (let i = index; i <= Math.min((index + 10) - 1, pageControl.totalPages); ++i)
+							{
+								output.push(<a className="nav" href="#" data-pageid={i} onClick={this.doSearch}>{i}</a>);
+							}
+
+							if (index < pageControl.totalPages)
+							{
+								output.push(<a className="nav" href="#" onClick={this.doSearch}>&gt;&gt;</a>);
+							}
+
+							ReactDOM.render(
+								<div className="outputNavLinks">
+									{output}
+								</div>,
+								getObject(".outputNavigation")
+							);
+						}
+						else {
+							pageControl.currentIndex = props.target.outerText;
+							pageControl.navigation = (Math.ceil(pageControl.currentIndex / 10) * 10) - 10 + 1;
+
+							const XHR = new XMLHttpRequest();
+							const query = `call-api.php?query=${getObject('#imageQuery').value.trim()}` + (pageControl.currentIndex ? `&page=${pageControl.currentIndex}` : `&page=1`);
+
+							XHR.open("GET", query, true);
+							XHR.send();
+
+							XHR.addEventListener("readystatechange", function()
+							{
+								if (this.readyState == 4 && this.status == 200)
+								{
+									ReactDOM.render(
+										<Output data={this.responseText}/>,
+										getObject(".output")
+									);
+								}
+							}, false);
+						}
+					}
+
+					render(props)
+					{
+						let output = [];
+						const index = Number(pageControl.navigation);
+
+						if (index > 10)
+						{
+							output.push(<a className="nav" href="#" onClick={this.doSearch}>&lt;&lt;</a>);
+						}
+
+						for (let i = index; i <= Math.min((index + 10) - 1, pageControl.totalPages); ++i)
+						{
+							const classSelect = i == pageControl.currentIndex ? "nav sel" : "nav";
+							output.push(<a className={classSelect} href="#" data-pageid={i} onClick={this.doSearch}>{i}</a>);
+						}
+
+						if (index < pageControl.totalPages && pageControl.totalPages > 10)
+						{
+							output.push(<a className="nav" href="#" onClick={this.doSearch}>&gt;&gt;</a>);
+						}
+
+						return(
+							<div className="outputNavLinks">
+								{output}
+							</div>
+						);
+					}
+				}
+
+				class Output extends React.Component
+				{
+					constructor(props)
+					{
+						super(props);
+
+						this.state = {
+							imgDataOpacity: 0,
+							imgDataLeft: 0,
+							imgDataTop: 0,
+							imgDataVisible: "hidden",
+							imgDataWidth: 0
+						};
+
+						this.showNavigation = this.showNavigation.bind(this);
+						this.showImage = this.showImage.bind(this);
+						this.hideImageData = this.hideImageData.bind(this);
+					}
+					componentDidMount()
+					{
+						const images = pageControl.totalImages;
+						console.log(`A total of ${images} ${images == 1 ? 'image has' : 'images have'} been output.`);
+					}
+					hideImageData(props)
+					{
+						event.preventDefault();
+
+						this.setState({
+							imgDataOpacity: 0,
+							imgDataVisible: "hidden"
+						});
+					}
+					// Show image data box, uploader, date, and different image sizes
+					showImage(props)
+					{
+						const imageDate = props.target.dataset.timestamp;
+						const imageTitle = props.target.attributes.title.textContent.trim().length > 1 ? props.target.attributes.title.textContent : <em>Image</em>;
+
+						const imgDataOutput = (
+							<div>
+								<strong>{imageTitle.length > 35 ? imageTitle.substring(0, 35) + "..." : imageTitle}<br/>
+								by <a className="imgdata" href={props.target.dataset.profile} target="_blank">{props.target.dataset.name}</a></strong>
+								<br/>
+								<strong>{new Date(imageDate).toLocaleDateString()}</strong>
+								<hr/><br/>
+								<a className="imgdata" href={props.target.dataset.imgfull} target="_blank">Full size</a><br/>
+								<a className="imgdata" href={props.target.dataset.imgreg} target="_blank">Regular size</a><br/>
+								<a className="imgdata" href={props.target.dataset.small} target="_blank">Small size</a><br/><br/>
+								<hr/><br/>
+								<a className="imgdata" href="#" onClick={this.hideImageData}>OK</a><br/><br/>
+							</div>
+						);
+
+						this.setState(
+						{
+							imgDataLeft : ((document.body.offsetWidth / 2) - (350 / 2)),
+							imgDataTop : window.screen.width < 950 ? window.scrollY : (window.screen.height / 2) - 200,
+							imgDataOpacity : 1,
+							imgDataVisible : "visible",
+							imgDataWidth : props.target.naturalWidth
+						});
+
+						ReactDOM.render(imgDataOutput, getObject(".imagedata"));
+					}
+
+					// Display the Page buttons
+					showNavigation()
+					{
+						event.preventDefault();
+						const index = pageControl.currentIndex;
+
+						if (index > 0 && index <= pageControl.totalPages)
+						{
+							ReactDOM.render(
+								<NavLinks onClick={this.doSearch}/>,
+								getObject(".outputNavigation")
+							);
+						}
+					}
+					render(props)
+					{
+						const imgDataStyle = {
+							backgroundColor:'rgb(255,255,255)',
+							border: '5px #c0c0c0 outset',
+							boxShadow: '0px 0px 100px #000',
+							fontWeight: "bold",
+							padding:	10,
+							position: 	'absolute',
+							left: 		this.state.imgDataLeft,
+							top: 		this.state.imgDataTop,
+							opacity: 	this.state.imgDataOpacity,
+							visibility: this.state.imgDataVisible,
+							width:		350,
+							zIndex:	999
+						};
+
+						let output = [];
+						let imageDataOutput = <div className="imagedata" style={imgDataStyle}></div>;
+
+						const parsedData = JSON.parse(this.props.data);
+						const resultsData = parsedData.results;
+
+						pageControl.totalImages = parsedData.total;
+						pageControl.totalPages = parsedData.total_pages;
+						
+						if (pageControl.totalPages == 0)
+						{
+							const headingStyle = {
+								fontSize: 36
+							};
+
+							return (
+								<div style={headingStyle}>
+									<strong>
+										No results.
+									</strong>
+								</div>
+							);
+						}
+
+						this.showNavigation();
+
+						for (const instance in resultsData)
+						{
+							let desc = "";
+							let altDesc = "";
+
+							const ins = resultsData[instance];
+							const timestamp = ins.user.updated_at;
+							const dName = ins.user.name;
+							const dProfile = ins.user.links.html;
+							const dFull = ins.urls.full;
+							const dReg = ins.urls.regular;
+							const dSma = ins.urls.small;
+							const dSrc = ins.urls.thumb;
+
+							if (ins.alt_description !== undefined && ins.alt_description != null)
+								altDesc = ins.alt_description;
+
+							if (ins.description !== undefined && ins.description != null)
+								desc = removeNewline(ins.description);
+
+							output.push(<img alt={altDesc} title={desc} onClick={this.showImage} data-timestamp={timestamp} data-name={dName} data-profile={dProfile} data-imgfull={dFull} data-imgreg={dReg} data-small={dSma} src={dSrc}/>);
+						}
+
+						return(
+							<div className="outputdata">
+								{imageDataOutput}
+								<div className="imageOutput">
+									{output}
+								</div>
+							</div>
+						);
+					}
+				}
+
+				class Main extends React.Component
+				{
+					constructor(props)
+					{
+						super(props);
+
+						this.state = {
+							doSearchPage: 1,
+							searchCriteria: "",
+							pageSelector: "",
+							imageResults: ""
+						};
+
+						this.showCriteria = this.showCriteria.bind(this);
+						this.inputCriteria = this.inputCriteria.bind(this);
+						this.returnKey = this.returnKey.bind(this);
+					}
+
+					// Query the Unsplash API with requested keyword
+					doSearch()
+					{
+						event.preventDefault();
+
+						ReactDOM.render(
+							<strong style={{fontSize: 36}}>
+								Searching in progress, please wait...
+							</strong>,
+							getObject(".output")
+						);
+
+						const XHR = new XMLHttpRequest();
+						const query = `call-api.php?query=${getObject('#imageQuery').value.trim()}` + (pageControl.currentIndex ? `&page=${pageControl.currentIndex}` : `&page=1`);
+
+						XHR.open("GET", query, true);
+						XHR.send();
+
+						XHR.addEventListener("error", function()
+						{
+							ReactDOM.render(
+								<strong style={{fontSize: 36}}>
+									Error: you may be offline, or there is something wrong with your request. Please try again later.
+								</strong>,
+								getObject(".output")
+							);
+						});
+
+						XHR.addEventListener("readystatechange", function()
+						{
+							if (this.readyState == 4 && this.status == 200)
+							{
+								let errorFlag = 0;
+								let outputData = null;
+								const data = this.responseText;
+
+								if (data.length)
+								{
+									if (data.indexOf("Error:") == 0)
+									{
+										errorFlag = 1;
+										outputData = <strong style={{fontSize: 36}}>{data}</strong>;
+									}
+									else if (data.indexOf("Rate Limit Exceeded") == 0)
+									{
+										errorFlag = 1;
+										outputData = <strong style={{fontSize: 36}}>Sorry: Rate limit has been exceeded. Up to 50 searches per hour allowed.</strong>;
+									}
+									else {
+										outputData = <Output data={data}/>;
+									}
+								}
+								else {
+									errorFlag = 1;
+									outputData = <strong style={{fontSize: 36}}>Error: Request could not be completed. Please try again later.</strong>;
+								}
+
+								ReactDOM.render(
+									outputData,
+									getObject(".output")
+								);
+
+								if (!errorFlag)
+								{
+									sortImages();
+								}
+							}
+						}, false);
+					}
+					magnifyingGlass()
+					{
+						return new DOMParser().parseFromString('&#X1F50D;', 'text/html').body.textContent;
+					}
+					inputCriteria(evt)
+					{
+						// Sanitize input
+						let input = evt.target.value;
+						input = input.replace(/\\/g, "");
+						input = input.replace(/\//g, "");
+						input = input.replace(/'/g, "");
+						input = input.replace(/"/g, "");
+
+						this.setState({searchCriteria: input});
+					}
+
+					returnKey()
+					{
+						if (event.key == "Enter")
+						{
+							this.doSearch();
+						}
+					}
+					showCriteria()
+					{
+						let output = "";
+						const criteria = this.state.searchCriteria;
+						output = criteria.trim().length ? criteria : "";
+
+						return (output.length > 10 ? output.substring(0, 10) + "..." : output);
+					}
+					render()
+					{
+						return(
+							<main>
+								<h1>
+									Unsplash Image Search<br/>
+									&nbsp;{this.showCriteria()}&nbsp;
+								</h1>
+
+								<section className="search">
+									<a href="#" onClick={this.doSearch}>{this.magnifyingGlass()}</a>
+									<input id="imageQuery" onChange={this.inputCriteria} maxlength="20" onKeyDown={this.returnKey} placeholder="Free hi-res photos" title="Search here (press Enter)" type="text" value={this.state.searchCriteria} defaultValue=""/>
+								</section>
+								<section className="outputNavigation">{this.state.pageSelector}</section>
+								<section className="output">
+									&nbsp;
+								</section>
+							</main>
+						);
+					}
+				}
+				
+				ReactDOM.render(
+					<div>
+						<Navigation/>
+						<Main/>
+						<Footer date="15 September 2020"/>
+					</div>
+				, document.body);
+			};
+		</script>
+		<title>Unsplash Image Searching - ReactJS Micro SPA</title>
+	</head>
+	<body>
+		&nbsp;
+	</body>
+</html>
