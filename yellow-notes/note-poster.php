@@ -21,24 +21,25 @@
         }
 		
 		// Strict file checks
-		private function isFileSafeToUpload($file)
+		private function isFileSafeToUpload($tmpFile, $realFile)
 		{
 			$isSafe = true;
 
 			// Get file type
 			$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			$getFileType = finfo_file($finfo, $file);
+			$getFileType = finfo_file($finfo, $tmpFile);
 			finfo_close($finfo);
 
 			// No executable or other application-type files allowed!
 			if (strripos($getFileType, "application/") === false && strripos($getFileType, "x-dosexec") === false)
 			{
-				$fileData = file_get_contents($file);
+				$fileData = file_get_contents($tmpFile);
 
 				// File checks happen here; to disable a certain file check simply comment it out
 				if (
-					strripos($file, ".phtml") !== false		||	// No PHP files allowed!
-					strripos($file, ".php") !== false 		|| 	// No PHP files allowed!
+					strripos($realFile, ".phtml") !== false		||	// No PHP files allowed!
+					strripos($realFile, ".php") !== false 		|| 	// No PHP files allowed!
+					strripos($realFile, ".htaccess") !== false	||	// No Apache server configuration files
 					strripos($fileData, "<?php") !== false	||	// No files containing PHP tags allowed!
 					strripos($fileData, "<?=") !== false	||	// (as above)
 					strripos($fileData, "<script") !== false	// No files containg HTML script tags allowed!
@@ -183,7 +184,7 @@ YellowNote;
 						// Uploaded file must not exceed 250 kilobytes
 						if (
 							$_FILES["attachFile"]["size"] <= 250000 &&
-							$this->isFileSafeToUpload($submittedFile) &&
+							$this->isFileSafeToUpload($submittedFile, $uploadedFile) &&
 							move_uploaded_file($submittedFile, dirname(__FILE__)."/file_storage/".$uploadedFile) === true
 						)
 						{
