@@ -230,7 +230,7 @@
 		
 		<hr/>
 		
-		<div style="text-align:center;">&copy; 2000 - $thisYear by Voyager 89</div>
+		<div style="text-align:center;">&copy; 2006 - $thisYear by Voyager 89</div>
 	</body>
 </html>
 INDEX;
