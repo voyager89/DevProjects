@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<link href="style.css?v2" media="screen" rel="stylesheet"/>
+		<link href="style.css?v2.7" media="screen" rel="stylesheet"/>
+		<link rel="icon" href="/V89.ico" type="image/x-icon"/>
+
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<script src="client.js?v6.8" type="text/javascript"></script>
+
+		<script src="client.js?v9.1" type="text/javascript"></script>
+
 		<title>TalkTalk - V89 Chat Application</title>
 	</head>
 	<body onresize="documentWidth=document.body.offsetWidth; window.alignAboutBox(document.body.offsetWidth, document.body.offsetHeight)">
@@ -32,9 +36,6 @@
 					<br/><br/>
 					THE USERNAME YOU PICK NOW MAY<br/>
 					BE TAKEN LATER BY SOMEONE ELSE.
-					<br/><br/>
-					IF THERE'S NO ACTIVITY FOR MORE THAN<br/>
-					30 MINUTES YOU WILL BE LOGGED OFF.
 				</div>
 			</div>
 
@@ -54,6 +55,7 @@
 			<section class="chatWindow" style="display:none;">
 				<div class="chatGroupsMOBILE" style="opacity:0; visibility:hidden;">
 					<a class="link" href="#" onclick="window.hideChatGroups(); return false;">X</a> <a class="link" href="#" onclick="window.showAboutBox(); return false;">&#9432;</a>
+
 					<div class="structure">
 						<span class="title">Chat Groups</span>
 						<hr/>
@@ -65,7 +67,7 @@
 						
 						<span class="title">Online Users</span>
 						<hr/>
-						<div id="onlineUserListMOBILE" style="overflow-y:scroll;">
+						<div id="onlineUserListMOBILE" style="height:150px; overflow-y:scroll;">
 							<!--<em>None at the moment</em>-->
 
 						</div>
@@ -87,17 +89,19 @@
 							<!--<em>None at the moment</em>-->
 						</div>
 					</div>
-					<div class="conversationBox" onmouseover="scrollChatWindow=false;" onmouseout="scrollChatWindow=true;">
+					<div class="conversationBox" onscroll="scrollChatWindow=false;" onmouseover="scrollChatWindow=false;" onmouseout="scrollChatWindow=true;">
 						&nbsp;
 					</div>
 					<div class="textInput">
-						<textarea maxlength="300" onkeydown="window.sendMessage(event, this, 'postMessage');" placeholder="Type in your message here..." title="Press Return to post"></textarea>
+						&nbsp;
 					</div>
 				</div>
 			</section>
 		</main>
-		<footer>
-			<a href="https://www.javascript.com/" target="_blank"><img src="js-logo.png"/></a><a href="https://www.nodejs.org/" target="_blank"><img src="nodejs-logo.png"/></a><a href="https://www.mysql.com/" target="_blank"><img src="mysql-logo.jpg"/></a>
-		</footer>
+		<!--<footer>
+			<a href="https://www.javascript.com/" target="_blank"><img src="js-logo.png"/></a>
+			<a href="https://www.nodejs.org/" target="_blank"><img src="nodejs-logo.png"/></a>
+			<a href="https://www.mysql.com/" target="_blank"><img src="mysql-logo.jpg"/></a>
+		</footer>-->
 	</body>
 </html>
